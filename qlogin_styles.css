@@ -388,7 +388,6 @@
 
 #qlogin-wrapper .iti {
     direction: ltr;
-    position: relative;
     width: 100%;
 }
 
@@ -410,63 +409,47 @@
     color: #53606c !important;
 }
 
-#qlogin-wrapper .iti__country-list {
+#qlogin-wrapper .iti__country-list,
+.qlogin-country-list {
     background: #fff !important;
-    border: 1px solid #c8d3dc !important;
-    border-radius: 6px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+    border-color: #9aa4ad !important;
     color: #17212b !important;
     direction: ltr;
-    font-size: 0.9rem;
-    left: 0;
-    margin-top: 4px;
-    max-height: 220px;
-    overflow-y: auto;
+    max-width: calc(100vw - 2rem);
     text-align: left;
-    white-space: nowrap;
-    width: min(340px, calc(100vw - 40px)) !important;
-    z-index: 1050;
+    width: min(23rem, calc(100vw - 2rem));
+    white-space: normal;
+    z-index: 1000;
 }
 
-#qlogin-wrapper .iti__country {
-    align-items: center;
+#qlogin-wrapper .iti__country,
+.qlogin-country-list .iti__country {
     background: #fff !important;
     color: #17212b !important;
-    cursor: pointer;
     display: flex;
-    gap: 8px;
-    line-height: 1.4;
-    padding: 8px 12px;
+    gap: 0.35rem;
+    min-height: 2.4rem;
 }
 
-#qlogin-wrapper .iti__flag-box {
-    display: inline-flex;
-    align-items: center;
-    margin-right: 6px;
-}
-
-#qlogin-wrapper .iti__country-name {
-    color: #17212b !important;
-    font-weight: 500;
-    margin-right: 6px;
-}
-
-#qlogin-wrapper .iti__dial-code {
-    color: #64748b !important;
-    margin-left: auto;
-    font-size: 0.85rem;
+#qlogin-wrapper .iti__country-name,
+.qlogin-country-list .iti__country-name {
+    flex: 1 1 auto;
+    overflow-wrap: anywhere;
 }
 
 #qlogin-wrapper .iti__country.iti__highlight,
-#qlogin-wrapper .iti__country.iti__active {
+#qlogin-wrapper .iti__country.iti__active,
+.qlogin-country-list .iti__country.iti__highlight,
+.qlogin-country-list .iti__country.iti__active {
     background: #e8f2f7 !important;
-    color: #0073aa !important;
 }
 
-#qlogin-wrapper .iti__divider {
-    border-bottom: 1px solid #e2e8f0;
-    margin-bottom: 4px;
-    padding-bottom: 4px;
+.qlogin-country-list .iti__country-name {
+    color: #17212b !important;
+}
+
+.qlogin-country-list .iti__dial-code {
+    color: #53606c !important;
 }
 
 #qlogin-wrapper input[type="password"].form-control {

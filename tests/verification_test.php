@@ -1,18 +1,5 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace local_qlogin_shomokh;
 
@@ -20,6 +7,34 @@ defined('MOODLE_INTERNAL') || die();
 
 /** Unit tests for channel-specific verification helpers. */
 final class verification_test extends \advanced_testcase {
+    public function test_default_auth_policy_includes_manual_and_email(): void {
+        $this->resetAfterTest();
+        unset_config('authtypes', 'local_qlogin_shomokh');
+
+        $this->assertSame(['manual', 'email'], auth_policy::allowed_types());
+        $this->assertTrue(auth_policy::allows((object)['auth' => 'manual']));
+        $this->assertTrue(auth_policy::allows((object)['auth' => 'email']));
+    }
+
+    public function test_email_auth_legacy_login_starts_verification_when_allowed(): void {
+        $this->resetAfterTest();
+        set_config('enabled', 0, 'local_qlogin_shomokh');
+        $user = $this->getDataGenerator()->create_user([
+            'username' => 'legacy.email.auth',
+            'auth' => 'email',
+            'email' => 'legacy-email-auth@example.test',
+        ]);
+        set_config('enabled', 1, 'local_qlogin_shomokh');
+        set_config('requireemail', 1, 'local_qlogin_shomokh');
+        set_config('requirephone', 1, 'local_qlogin_shomokh');
+        set_config('authtypes', 'manual,email', 'local_qlogin_shomokh');
+
+        $records = verification::bootstrap_existing_user($user);
+
+        $this->assertSame(verification::VERIFIED, $records[verification::EMAIL]->state);
+        $this->assertSame(verification::PENDING, $records[verification::PHONE]->state);
+    }
+
     public function test_whatsapp_url_rejects_meta_identifiers(): void {
         $this->resetAfterTest();
         set_config('businessnumber', '1234567890123456', 'local_qlogin_shomokh');
@@ -148,9 +163,7 @@ final class verification_test extends \advanced_testcase {
 
         $this->assertSame('verified', $result['status']);
         $this->assertSame((int)$currentuser->id, (int)$result['userid']);
-        $this->assertSame(
-            verification::VERIFIED,
-            $DB->get_field('local_qlogin_shomokh_verify', 'state', ['id' => $pendingid])
-        );
+        $this->assertSame(verification::VERIFIED,
+            $DB->get_field('local_qlogin_shomokh_verify', 'state', ['id' => $pendingid]));
     }
 }

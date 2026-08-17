@@ -1,18 +1,5 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** Resend API provider. @package local_qlogin_shomokh */
 namespace local_qlogin_shomokh\mail;
@@ -29,17 +16,10 @@ final class resend_provider implements provider_interface {
         global $CFG;
         [$apikey] = config::resend_api_key();
         $fromemail = \local_qlogin_shomokh\manager::normalise_email(
-            (string)get_config('local_qlogin_shomokh', 'resendfromemail')
-        );
+            (string)get_config('local_qlogin_shomokh', 'resendfromemail'));
         if ($apikey === '' || $fromemail === '') {
-            return new result(
-                false,
-                false,
-                'configerror',
-                0,
-                null,
-                get_string('mail:notconfigured', 'local_qlogin_shomokh')
-            );
+            return new result(false, false, 'configerror', 0, null,
+                get_string('mail:notconfigured', 'local_qlogin_shomokh'));
         }
         require_once($CFG->libdir . '/filelib.php');
         $fromname = trim(clean_param((string)get_config('local_qlogin_shomokh', 'resendfromname'), PARAM_TEXT));
@@ -50,11 +30,8 @@ final class resend_provider implements provider_interface {
             'to' => [$message->to],
             'subject' => $message->subject,
             'text' => $message->text,
-            'html' => '<div dir="auto">' . nl2br(htmlspecialchars(
-                $message->text,
-                ENT_QUOTES | ENT_SUBSTITUTE,
-                'UTF-8'
-            )) . '</div>',
+            'html' => '<div dir="auto">' . nl2br(htmlspecialchars($message->text,
+                ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')) . '</div>',
         ];
         $timeout = max(3, min(30, (int)get_config('local_qlogin_shomokh', 'resendtimeout')));
         try {
@@ -65,10 +42,8 @@ final class resend_provider implements provider_interface {
                 'Idempotency-Key: ' . $message->idempotencykey,
                 'User-Agent: local_qlogin_shomokh/0.4.2',
             ]);
-            $response = $curl->post('https://api.resend.com/emails', json_encode(
-                $payload,
-                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-            ), [
+            $response = $curl->post('https://api.resend.com/emails', json_encode($payload,
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), [
                     'CURLOPT_TIMEOUT' => $timeout,
                     'CURLOPT_CONNECTTIMEOUT' => min(5, $timeout),
                 ]);

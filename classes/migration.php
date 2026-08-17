@@ -1,18 +1,5 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** Existing-account phone alias migration. @package local_qlogin_shomokh */
 namespace local_qlogin_shomokh;
@@ -24,37 +11,22 @@ final class migration {
     /** Whether self-service linking is enabled with phone verification ready. */
     public static function self_claim_available(): bool {
         global $DB;
-        $selfclaim = get_config('local_qlogin_shomokh', 'selfclaimenabled');
-        $enabled = get_config('local_qlogin_shomokh', 'enabled');
-        $requirephone = get_config('local_qlogin_shomokh', 'requirephone');
-
-        $selfclaimenabled = $selfclaim === false || !empty($selfclaim);
-        $isenabled = $enabled === false || !empty($enabled);
-        $isrequirephone = $requirephone === false || !empty($requirephone);
-
-        return $selfclaimenabled
-            && $isenabled
-            && $isrequirephone
+        return (bool)get_config('local_qlogin_shomokh', 'selfclaimenabled')
+            && (bool)get_config('local_qlogin_shomokh', 'enabled')
+            && (bool)get_config('local_qlogin_shomokh', 'requirephone')
             && $DB->get_manager()->table_exists('local_qlogin_shomokh_alias')
             && $DB->get_manager()->table_exists('local_qlogin_shomokh_verify');
     }
 
     /** Whether an account may attach its first phone alias through self-service. */
     public static function can_self_claim(\stdClass $user): bool {
-        if (
-            empty($user->id) || !empty($user->deleted) || !empty($user->suspended)
+        if (empty($user->id) || !empty($user->deleted) || !empty($user->suspended)
                 || is_siteadmin($user->id)
-                || !self::self_claim_available()
-        ) {
+                || !self::self_claim_available()) {
             return false;
         }
-        $rawtypes = (string)get_config('local_qlogin_shomokh', 'authtypes');
-        $types = array_filter(array_map('trim', explode(',', $rawtypes)));
-        $types = $types ?: ['manual', 'email'];
-        if (!in_array((string)$user->auth, $types, true) && !in_array((string)$user->auth, ['manual', 'email'], true)) {
-            return false;
-        }
-        return self::phone_for_user($user) === '';
+        return auth_policy::allows($user)
+            && self::phone_for_user($user) === '';
     }
 
     /**
@@ -83,10 +55,8 @@ final class migration {
                 throw new \moodle_exception('claim:accountalreadylinked', 'local_qlogin_shomokh');
             }
         }
-        if (
-            empty($user->id) || (!$allowchange && !self::can_self_claim($user))
-                || ($allowchange && !self::user_can_manage_phone($user))
-        ) {
+        if (empty($user->id) || (!$allowchange && !self::can_self_claim($user))
+                || ($allowchange && !self::user_can_manage_phone($user))) {
             throw new \moodle_exception('claim:noteligible', 'local_qlogin_shomokh');
         }
 
@@ -161,17 +131,13 @@ final class migration {
         }
     }
 
+    /** Whether a signed-in account is allowed to add or replace its phone. */
     public static function user_can_manage_phone(\stdClass $user): bool {
-        if (
-            empty($user->id) || !empty($user->deleted) || !empty($user->suspended)
-                || is_siteadmin($user->id) || !self::self_claim_available()
-        ) {
+        if (empty($user->id) || !empty($user->deleted) || !empty($user->suspended)
+                || is_siteadmin($user->id) || !self::self_claim_available()) {
             return false;
         }
-        $rawtypes = (string)get_config('local_qlogin_shomokh', 'authtypes');
-        $types = array_filter(array_map('trim', explode(',', $rawtypes)));
-        $types = $types ?: ['manual', 'email'];
-        return in_array((string)$user->auth, $types, true) || in_array((string)$user->auth, ['manual', 'email'], true);
+        return auth_policy::allows($user);
     }
 
     /** Marks an active alias verified after the matching WhatsApp message succeeds. */
@@ -199,21 +165,12 @@ final class migration {
         if (!verification::available()) {
             return 0;
         }
-        $types = array_filter(array_map('trim', explode(
-            ',',
-            (string)get_config('local_qlogin_shomokh', 'authtypes')
-        )));
-        [$authsql, $params] = $DB->get_in_or_equal($types ?: ['manual'], SQL_PARAMS_NAMED, 'trustauth');
-        $users = $DB->get_records_select(
-            'user',
-            "deleted = :deleted AND suspended = :suspended AND auth $authsql",
-            [
+        [$authsql, $params] = $DB->get_in_or_equal(auth_policy::allowed_types(), SQL_PARAMS_NAMED, 'trustauth');
+        $users = $DB->get_records_select('user',
+            "deleted = :deleted AND suspended = :suspended AND auth $authsql", [
                 'deleted' => 0,
                 'suspended' => 0,
-            ] + $params,
-            'id ASC',
-            'id, username, email, auth, deleted, suspended'
-        );
+            ] + $params, 'id ASC', 'id, username, email, auth, deleted, suspended');
         $admins = [];
         foreach (get_admins() as $admin) {
             $admins[(int)$admin->id] = true;
@@ -223,10 +180,8 @@ final class migration {
         foreach ($users as $user) {
             $usernameisphone = preg_match('/^[\d\s+().\-٠-٩۰-۹]+$/u', (string)$user->username)
                 && manager::normalise_phone((string)$user->username) !== '';
-            if (
-                isset($admins[(int)$user->id]) || $usernameisphone
-                    || manager::normalise_email((string)$user->email) === ''
-            ) {
+            if (isset($admins[(int)$user->id]) || $usernameisphone
+                    || manager::normalise_email((string)$user->email) === '') {
                 continue;
             }
             if (verification::trust_legacy_email($user)) {
@@ -246,24 +201,18 @@ final class migration {
         foreach (get_admins() as $admin) {
             $admins[(int)$admin->id] = true;
         }
-        $types = array_filter(array_map('trim', explode(
-            ',',
-            (string)get_config('local_qlogin_shomokh', 'authtypes')
-        )));
-        $types = $types ?: ['manual', 'email'];
-        [$authsql, $authparams] = $DB->get_in_or_equal($types, SQL_PARAMS_NAMED, 'migauth');
+        [$authsql, $authparams] = $DB->get_in_or_equal(
+            auth_policy::allowed_types(), SQL_PARAMS_NAMED, 'migauth');
         $guestid = (int)guest_user()->id;
-        $namefieldnames = class_exists('\core_user\fields')
-            ? implode(', ', \core_user\fields::for_name()->get_required_fields())
-            : 'firstname, lastname, firstnamephonetic, lastnamephonetic, middlename, alternatename';
-        $userfields = "id, username, email, phone1, phone2, auth, suspended, {$namefieldnames}";
-        $users = $DB->get_records_select(
-            'user',
+        $fields = array_merge(
+            ['id', 'username', 'email', 'phone1', 'phone2', 'auth', 'suspended'],
+            \core_user\fields::for_name()->get_required_fields()
+        );
+        $fields = implode(', ', array_unique($fields));
+        $users = $DB->get_records_select('user',
             "deleted = :deleted AND id <> :guestid AND auth $authsql",
             ['deleted' => 0, 'guestid' => $guestid] + $authparams,
-            'id ASC',
-            $userfields
-        );
+            'id ASC', $fields);
         foreach (array_keys($admins) as $adminid) {
             unset($users[$adminid]);
         }
@@ -336,10 +285,8 @@ final class migration {
                 $source = (string)$item['candidates'][$phone];
                 $ownerids = array_keys($owners[$phone] ?? []);
                 $existingalias = $aliasesbyphone[$phone] ?? null;
-                if (
-                    count($ownerids) === 1 && (int)$ownerids[0] === $userid
-                        && (!$existingalias || (int)$existingalias->userid === $userid)
-                ) {
+                if (count($ownerids) === 1 && (int)$ownerids[0] === $userid
+                        && (!$existingalias || (int)$existingalias->userid === $userid)) {
                     $category = 'safe';
                     $safe[] = ['userid' => $userid, 'phone' => $phone, 'source' => $source];
                 } else {
@@ -372,10 +319,8 @@ final class migration {
         $scan = self::scan(0);
         $count = 0;
         foreach (array_slice($scan['safe'], 0, max(1, min(2000, $batchsize))) as $candidate) {
-            if (
-                $DB->record_exists('local_qlogin_shomokh_alias', ['userid' => $candidate['userid']])
-                    || $DB->record_exists('local_qlogin_shomokh_alias', ['phone' => $candidate['phone']])
-            ) {
+            if ($DB->record_exists('local_qlogin_shomokh_alias', ['userid' => $candidate['userid']])
+                    || $DB->record_exists('local_qlogin_shomokh_alias', ['phone' => $candidate['phone']])) {
                 continue;
             }
             $user = $DB->get_record('user', ['id' => $candidate['userid'], 'deleted' => 0]);
@@ -500,13 +445,8 @@ final class migration {
                 $aliasexclude = ' AND userid <> :aliasexcludeuserid';
                 $aliasparams['aliasexcludeuserid'] = $excludeuserid;
             }
-            if (
-                $DB->record_exists_select(
-                    'local_qlogin_shomokh_alias',
-                    'phone = :phone AND status = :status' . $aliasexclude,
-                    $aliasparams
-                )
-            ) {
+            if ($DB->record_exists_select('local_qlogin_shomokh_alias',
+                    'phone = :phone AND status = :status' . $aliasexclude, $aliasparams)) {
                 return true;
             }
         }
@@ -538,13 +478,9 @@ final class migration {
             $legacyexclude = ' AND id <> :legacyexcludeuserid';
             $legacyparams['legacyexcludeuserid'] = $excludeuserid;
         }
-        $legacyusers = $DB->get_records_select(
-            'user',
+        $legacyusers = $DB->get_records_select('user',
             "deleted = :deleted AND (phone1 <> :emptyphone1 OR phone2 <> :emptyphone2)$legacyexclude",
-            $legacyparams,
-            '',
-            'id, phone1, phone2'
-        );
+            $legacyparams, '', 'id, phone1, phone2');
         foreach ($legacyusers as $legacyuser) {
             foreach (['phone1', 'phone2'] as $field) {
                 if (self::normalise_legacy_phone((string)$legacyuser->{$field}) === $phone) {
@@ -573,9 +509,7 @@ final class migration {
             'suspended' => 0,
         ], '*', MUST_EXIST);
         $countrycode = preg_replace('/\D/', '', (string)get_config(
-            'local_qlogin_shomokh',
-            'legacydefaultcountrycode'
-        ));
+            'local_qlogin_shomokh', 'legacydefaultcountrycode'));
         $current = self::phone_for_user($user);
         $corrected = manager::remove_repeated_country_code($current, $countrycode);
         if ($countrycode === '' || $corrected === '' || $corrected === $current) {
@@ -665,10 +599,8 @@ final class migration {
             '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
         ];
         $digits = preg_replace('/\D/u', '', strtr($phone, $arabicdigits));
-        $countrycode = preg_replace('/\D/', '', (string)get_config(
-            'local_qlogin_shomokh',
-            'legacydefaultcountrycode'
-        ));
+        $countrycode = preg_replace('/\D/', '', (string)get_config('local_qlogin_shomokh',
+            'legacydefaultcountrycode'));
         if ($countrycode === '' || strlen($countrycode) > 3 || substr($digits, 0, 1) !== '0') {
             return '';
         }

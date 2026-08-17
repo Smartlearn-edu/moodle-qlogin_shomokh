@@ -1,18 +1,5 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** Single-use email password reset endpoint. @package local_qlogin_shomokh */
 require_once('../../config.php');
@@ -38,10 +25,8 @@ if ($record && ($data = $form->get_data())) {
         $target = $resetuser && \local_qlogin_shomokh\migration::can_self_claim($resetuser)
             ? new moodle_url('/local/qlogin_shomokh/link_existing.php')
             : new moodle_url('/local/qlogin_shomokh/index.php');
-        redirect(
-            $target,
-            get_string('recovery:passwordchanged', 'local_qlogin_shomokh')
-        );
+        redirect($target,
+            get_string('recovery:passwordchanged', 'local_qlogin_shomokh'));
     }
     $record = false;
 }
@@ -59,11 +44,8 @@ if ($record) {
     $form->display();
 } else {
     echo $OUTPUT->notification(get_string('recovery:invalidlink', 'local_qlogin_shomokh'), 'warning');
-    echo $OUTPUT->single_button(
-        new moodle_url('/local/qlogin_shomokh/recover.php'),
-        get_string('forgotpassword', 'local_qlogin_shomokh'),
-        'get'
-    );
+    echo $OUTPUT->single_button(new moodle_url('/local/qlogin_shomokh/recover.php'),
+        get_string('forgotpassword', 'local_qlogin_shomokh'), 'get');
 }
 echo html_writer::end_div();
 echo html_writer::end_div();

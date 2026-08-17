@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/qlogin_shomokh/db" VERSION="2026081714" COMMENT="XMLDB file for local_qlogin_shomokh">
+<XMLDB PATH="local/qlogin_shomokh/db" VERSION="2026081719" COMMENT="XMLDB file for local_qlogin_shomokh">
   <TABLES>
     <TABLE NAME="local_qlogin_shomokh_verify" COMMENT="Unified email and phone verification state">
       <FIELDS>

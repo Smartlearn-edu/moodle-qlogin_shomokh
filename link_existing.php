@@ -1,18 +1,5 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** Self-service linking of an existing Moodle account to mobile sign-in. @package local_qlogin_shomokh */
 require_once('../../config.php');
@@ -36,19 +23,14 @@ $PAGE->requires->js(new moodle_url(
 $PAGE->requires->js(new moodle_url('/local/qlogin_shomokh/qlogin_phone.js', ['v' => $assetversion]));
 
 if (!\local_qlogin_shomokh\migration::self_claim_available()) {
-    redirect(
-        new moodle_url('/local/qlogin_shomokh/index.php'),
-        get_string('claim:disabled', 'local_qlogin_shomokh'),
-        null,
-        \core\output\notification::NOTIFY_WARNING
-    );
+    redirect(new moodle_url('/local/qlogin_shomokh/index.php'),
+        get_string('claim:disabled', 'local_qlogin_shomokh'), null,
+        \core\output\notification::NOTIFY_WARNING);
 }
 
 $authenticated = isloggedin() && !isguestuser();
-if (
-    $authenticated && (is_siteadmin($USER->id)
-        || has_capability('local/qlogin_shomokh:manage', $context))
-) {
+if ($authenticated && (is_siteadmin($USER->id)
+        || has_capability('local/qlogin_shomokh:manage', $context))) {
     redirect(new moodle_url('/local/qlogin_shomokh/health.php'));
 }
 $currentphone = $authenticated ? \local_qlogin_shomokh\migration::phone_for_user($USER) : '';
@@ -69,12 +51,8 @@ if ($data = $form->get_data()) {
     );
     if (!$claimuser) {
         \core\notification::error(get_string('claim:invalidcredentials', 'local_qlogin_shomokh'));
-    } else if (
-        $changing && !\local_qlogin_shomokh\account_link::reauthenticate(
-            $claimuser,
-            (string)$data->password
-        )
-    ) {
+    } else if ($changing && !\local_qlogin_shomokh\account_link::reauthenticate(
+            $claimuser, (string)$data->password)) {
         \core\notification::error(get_string('claim:wrongpassword', 'local_qlogin_shomokh'));
     } else {
         try {
@@ -91,15 +69,11 @@ if ($data = $form->get_data()) {
             }
             $claimuser = $DB->get_record('user', ['id' => $claimuser->id], '*', MUST_EXIST);
             \local_qlogin_shomokh\verification::ensure_for_user($claimuser);
-            redirect(
-                new moodle_url('/local/qlogin_shomokh/verify.php'),
-                get_string(
-                    $result === 'created'
+            redirect(new moodle_url('/local/qlogin_shomokh/verify.php'),
+                get_string($result === 'created'
                     ? ($changing ? 'claim:changesuccess' : 'claim:success')
                     : 'claim:alreadylinked',
-                    'local_qlogin_shomokh'
-                )
-            );
+                    'local_qlogin_shomokh'));
         } catch (moodle_exception $exception) {
             \core\notification::error($exception->getMessage());
         } catch (Throwable $exception) {
@@ -124,11 +98,9 @@ echo html_writer::start_div('notranslate', [
 ]);
 echo html_writer::start_div('qlogin-card');
 echo $OUTPUT->heading(get_string($changing ? 'claim:changetitle' : 'claim:title', 'local_qlogin_shomokh'));
-echo html_writer::tag('p', get_string(
-    $changing ? 'claim:changeintro'
+echo html_writer::tag('p', get_string($changing ? 'claim:changeintro'
     : ($authenticated ? 'claim:introloggedin' : 'claim:intro'),
-    'local_qlogin_shomokh'
-));
+    'local_qlogin_shomokh'));
 $form->display();
 if (!$authenticated) {
     echo html_writer::div(html_writer::link(

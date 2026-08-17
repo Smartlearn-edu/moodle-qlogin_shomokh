@@ -1,18 +1,5 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 $string['pluginname'] = 'دخول شموخ والتحقق من الحساب';
 $string['authenticationtabs'] = 'الدخول إلى الحساب';
@@ -111,7 +98,7 @@ $string['maxreminders_desc'] = 'الحد الأقصى للتذكيرات الب�
 $string['resendcooldownsetting'] = 'مهلة إعادة الإرسال للقناة نفسها بالثواني';
 $string['resendcooldown_desc'] = 'تطبق بصورة مستقلة على البريد وواتساب والاستعادة، ولا تمنع استخدام قناة أخرى.';
 $string['authtypes'] = 'طرق المصادقة المشمولة';
-$string['authtypes_desc'] = 'طرق Moodle مفصولة بفاصلة. الافتراضي: manual.';
+$string['authtypes_desc'] = 'طرق Moodle مفصولة بفاصلة. الافتراضي: manual,email.';
 $string['selfclaimenabled'] = 'تفعيل الربط الذاتي للحسابات السابقة';
 $string['selfclaimenabled_desc'] = 'يسمح لصاحب الحساب السابق بعد تسجيل دخوله أو إثبات كلمة مروره بإضافة رقم جوال فريد للدخول، دون تغيير معرّف مستخدم Moodle. ويجب أن يكون التحقق الموحد من الجوال مفعّلًا أيضًا.';
 $string['settings:whatsapp'] = 'واتساب واستعادة كلمة المرور';

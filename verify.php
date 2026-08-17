@@ -1,18 +1,5 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** Unified student verification centre. @package local_qlogin_shomokh */
 require_once('../../config.php');
@@ -74,11 +61,9 @@ $emailform = new \local_qlogin_shomokh\form\email_form($url);
 if ($data = $emailform->get_data()) {
     $email = \local_qlogin_shomokh\manager::normalise_email($data->email);
     $emailsql = $DB->sql_equal('email', ':email', false);
-    $duplicate = $DB->record_exists_select(
-        'user',
+    $duplicate = $DB->record_exists_select('user',
         "$emailsql AND id <> :userid AND deleted = :deleted",
-        ['email' => $email, 'userid' => $user->id, 'deleted' => 0]
-    );
+        ['email' => $email, 'userid' => $user->id, 'deleted' => 0]);
     if ($email === '' || $duplicate) {
         \core\notification::error(get_string($email === '' ? 'error:email' : 'error:emailexists', 'local_qlogin_shomokh'));
     } else {
@@ -129,11 +114,8 @@ echo html_writer::start_tag('main', [
 echo $OUTPUT->heading(get_string('verify:title', 'local_qlogin_shomokh'));
 $configuredgrace = get_config('local_qlogin_shomokh', 'graceperioddays');
 $gracedays = $configuredgrace === false ? 30 : max(1, min(365, (int)$configuredgrace));
-echo html_writer::tag(
-    'p',
-    get_string('verify:intro', 'local_qlogin_shomokh', $gracedays),
-    ['class' => 'local-qlogin-verification__intro']
-);
+echo html_writer::tag('p', get_string('verify:intro', 'local_qlogin_shomokh', $gracedays),
+    ['class' => 'local-qlogin-verification__intro']);
 
 if (empty($records)) {
     echo $OUTPUT->notification(get_string('verify:notrequired', 'local_qlogin_shomokh'), 'info');
@@ -145,11 +127,8 @@ if (isset($records['phone'])) {
     echo html_writer::start_tag('section', ['class' => 'local-qlogin-verify-card', 'aria-labelledby' => 'phone-heading']);
     echo html_writer::tag('h2', get_string('verify:phoneheading', 'local_qlogin_shomokh'), ['id' => 'phone-heading']);
     if ($phonecomplete) {
-        echo $OUTPUT->notification(get_string(
-            'verify:phonecomplete',
-            'local_qlogin_shomokh',
-            \local_qlogin_shomokh\manager::mask_phone($record->target)
-        ), 'success');
+        echo $OUTPUT->notification(get_string('verify:phonecomplete', 'local_qlogin_shomokh',
+            \local_qlogin_shomokh\manager::mask_phone($record->target)), 'success');
     } else if (!$hasphone) {
         echo $OUTPUT->notification(get_string('verify:phonemissing', 'local_qlogin_shomokh'), 'warning');
         echo html_writer::div(html_writer::link(
@@ -158,11 +137,8 @@ if (isset($records['phone'])) {
             ['class' => 'btn btn-primary']
         ), 'local-qlogin-verification__primary');
     } else {
-        echo $OUTPUT->notification(get_string(
-            'verify:phonepending',
-            'local_qlogin_shomokh',
-            \local_qlogin_shomokh\manager::mask_phone($record->target)
-        ), 'info');
+        echo $OUTPUT->notification(get_string('verify:phonepending', 'local_qlogin_shomokh',
+            \local_qlogin_shomokh\manager::mask_phone($record->target)), 'info');
         echo html_writer::alist([
             get_string('verify:stepopen', 'local_qlogin_shomokh'),
             get_string('verify:stepsend', 'local_qlogin_shomokh'),
@@ -172,30 +148,21 @@ if (isset($records['phone'])) {
         if ($phonecode === '') {
             echo $OUTPUT->notification(get_string('verify:codeinanotherbrowser', 'local_qlogin_shomokh'), 'info');
             $newcode = new moodle_url($url, ['action' => 'newphonecode', 'sesskey' => sesskey()]);
-            echo html_writer::div(
-                $OUTPUT->single_button(
-                    $newcode,
-                    get_string('verify:preparewhatsapp', 'local_qlogin_shomokh'),
-                    'post'
-                ),
-                'local-qlogin-verification__primary'
-            );
+            echo html_writer::div($OUTPUT->single_button($newcode,
+                get_string('verify:preparewhatsapp', 'local_qlogin_shomokh'), 'post'),
+                'local-qlogin-verification__primary');
         } else if ($whatsappurl) {
-            echo html_writer::div(html_writer::link(
-                $whatsappurl,
-                get_string('verify:sendwhatsapp', 'local_qlogin_shomokh'),
-                [
+            echo html_writer::div(html_writer::link($whatsappurl,
+                get_string('verify:sendwhatsapp', 'local_qlogin_shomokh'), [
                     'class' => 'btn btn-success btn-lg local-qlogin-whatsapp-primary',
                     'target' => '_blank',
                     'rel' => 'noopener',
                     'data-qlogin-whatsapp' => '1',
-                ]
-            ), 'local-qlogin-verification__primary');
+                ]), 'local-qlogin-verification__primary');
 
             $message = 'SHOMOKH VERIFY ' . $phonecode;
             $businessnumber = \local_qlogin_shomokh\manager::normalise_phone(
-                (string)get_config('local_qlogin_shomokh', 'businessnumber')
-            );
+                (string)get_config('local_qlogin_shomokh', 'businessnumber'));
             echo html_writer::start_tag('details', ['class' => 'local-qlogin-verification__fallback']);
             echo html_writer::tag('summary', get_string('verify:manualfallback', 'local_qlogin_shomokh'));
             echo html_writer::tag('p', get_string('verify:manualhelp', 'local_qlogin_shomokh', '+' . $businessnumber));
@@ -206,11 +173,8 @@ if (isset($records['phone'])) {
             echo html_writer::tag('summary', get_string('verify:trouble', 'local_qlogin_shomokh'));
             $remaining = \local_qlogin_shomokh\verification::cooldown_remaining($record);
             if ($remaining > 0) {
-                echo html_writer::tag(
-                    'p',
-                    get_string('resendavailablein', 'local_qlogin_shomokh', $remaining),
-                    ['class' => 'text-muted']
-                );
+                echo html_writer::tag('p', get_string('resendavailablein', 'local_qlogin_shomokh', $remaining),
+                    ['class' => 'text-muted']);
             } else {
                 $newcode = new moodle_url($url, ['action' => 'newphonecode', 'sesskey' => sesskey()]);
                 echo $OUTPUT->single_button($newcode, get_string('verify:replacecode', 'local_qlogin_shomokh'), 'post');
@@ -235,21 +199,15 @@ if (isset($records['email'])) {
     $complete = \local_qlogin_shomokh\verification::record_complete($record);
     echo html_writer::start_tag('section', ['class' => 'local-qlogin-verify-card', 'aria-labelledby' => 'email-heading']);
     echo html_writer::tag('h2', get_string('verify:emailheading', 'local_qlogin_shomokh'), ['id' => 'email-heading']);
-    echo $OUTPUT->notification(get_string(
-        $complete ? 'verify:emailcomplete' : 'verify:emailpending',
-        'local_qlogin_shomokh',
-        \local_qlogin_shomokh\manager::mask_email($record->target)
-    ), $complete ? 'success' : 'info');
+    echo $OUTPUT->notification(get_string($complete ? 'verify:emailcomplete' : 'verify:emailpending',
+        'local_qlogin_shomokh', \local_qlogin_shomokh\manager::mask_email($record->target)), $complete ? 'success' : 'info');
     echo html_writer::tag('p', get_string('verify:emailhelp', 'local_qlogin_shomokh'));
     $emailform->display();
     if (!$complete) {
         $remaining = \local_qlogin_shomokh\verification::cooldown_remaining($record);
         if ($remaining > 0) {
-            echo html_writer::tag(
-                'p',
-                get_string('resendavailablein', 'local_qlogin_shomokh', $remaining),
-                ['class' => 'text-muted']
-            );
+            echo html_writer::tag('p', get_string('resendavailablein', 'local_qlogin_shomokh', $remaining),
+                ['class' => 'text-muted']);
         } else {
             $resend = new moodle_url($url, ['action' => 'resendemail', 'sesskey' => sesskey()]);
             echo $OUTPUT->single_button($resend, get_string('emailpage:resend', 'local_qlogin_shomokh'), 'post');
@@ -257,9 +215,7 @@ if (isset($records['email'])) {
     }
     echo html_writer::end_tag('section');
 }
-echo html_writer::div(
-    $OUTPUT->continue_button(new moodle_url('/my/')),
-    'local-qlogin-verification__continue'
-);
+echo html_writer::div($OUTPUT->continue_button(new moodle_url('/my/')),
+    'local-qlogin-verification__continue');
 echo html_writer::end_tag('main');
 echo $OUTPUT->footer();

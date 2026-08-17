@@ -1,18 +1,5 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** Verification queue and exemptions. @package local_qlogin_shomokh */
 require_once('../../config.php');
@@ -40,13 +27,8 @@ if ($data = $form->get_data()) {
     if (!$exists) {
         \core\notification::error(get_string('manage:notfound', 'local_qlogin_shomokh'));
     } else {
-        \local_qlogin_shomokh\verification::set_exemption(
-            $data->scope,
-            (int)$data->scopeid,
-            $data->channel,
-            $data->reason,
-            (int)$USER->id
-        );
+        \local_qlogin_shomokh\verification::set_exemption($data->scope, (int)$data->scopeid,
+            $data->channel, $data->reason, (int)$USER->id);
         if ($data->scope === 'user') {
             \local_qlogin_shomokh\enforcement::release_if_complete((int)$data->scopeid);
         } else {
@@ -60,10 +42,12 @@ if ($data = $form->get_data()) {
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('manage:title', 'local_qlogin_shomokh'));
-$nameselects = class_exists('\core_user\fields')
-    ? \core_user\fields::for_name()->get_sql('u')->selects
-    : 'u.firstname, u.lastname, u.firstnamephonetic, u.lastnamephonetic, u.middlename, u.alternatename';
-$sql = "SELECT v.id, v.userid, v.channel, v.target, v.state, v.expiresat, {$nameselects}
+echo $OUTPUT->heading(get_string('manage:queue', 'local_qlogin_shomokh'), 3);
+$namefields = array_map(static function(string $field): string {
+    return 'u.' . $field;
+}, \core_user\fields::for_name()->get_required_fields());
+$nameselects = implode(', ', $namefields);
+$sql = "SELECT v.id, v.userid, v.channel, v.target, v.state, v.expiresat, $nameselects
           FROM {local_qlogin_shomokh_verify} v
           JOIN {user} u ON u.id = v.userid
          WHERE v.state IN (:pending, :expired)

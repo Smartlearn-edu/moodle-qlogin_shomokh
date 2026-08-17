@@ -1,18 +1,5 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace local_qlogin_shomokh;
 
@@ -20,6 +7,24 @@ defined('MOODLE_INTERNAL') || die();
 
 /** Tests non-destructive legacy phone migration and alias resolution. */
 final class migration_test extends \advanced_testcase {
+    public function test_email_auth_account_can_self_claim_only_when_configured(): void {
+        $this->resetAfterTest();
+        set_config('selfclaimenabled', 1, 'local_qlogin_shomokh');
+        set_config('enabled', 1, 'local_qlogin_shomokh');
+        set_config('requirephone', 1, 'local_qlogin_shomokh');
+        $user = $this->getDataGenerator()->create_user([
+            'username' => 'legacy.email.auth',
+            'auth' => 'email',
+            'phone1' => '',
+        ]);
+
+        set_config('authtypes', 'manual,email', 'local_qlogin_shomokh');
+        $this->assertTrue(migration::can_self_claim($user));
+
+        set_config('authtypes', 'manual', 'local_qlogin_shomokh');
+        $this->assertFalse(migration::can_self_claim($user));
+    }
+
     public function test_legacy_local_phone_requires_explicit_default_dialling_code(): void {
         $this->resetAfterTest();
         set_config('legacydefaultcountrycode', '999', 'local_qlogin_shomokh');
@@ -181,12 +186,10 @@ final class migration_test extends \advanced_testcase {
             'timecreated' => $now,
             'timemodified' => $now,
         ]);
-        foreach (
-            [
+        foreach ([
             [$staleuser->id, '966534390821', verification::VERIFIED, ''],
             [$current->id, '966966534390821', verification::PENDING, manager::hash_token('WD44FUATVY')],
-            ] as [$userid, $target, $state, $tokenhash]
-        ) {
+        ] as [$userid, $target, $state, $tokenhash]) {
             $DB->insert_record('local_qlogin_shomokh_verify', (object)[
                 'userid' => $userid,
                 'channel' => verification::PHONE,
@@ -209,23 +212,13 @@ final class migration_test extends \advanced_testcase {
         );
 
         $this->assertSame('966534390821', $corrected);
-        $this->assertSame(
-            '966534390821',
-            $DB->get_field('local_qlogin_shomokh_alias', 'phone', ['userid' => $current->id])
-        );
-        $this->assertSame(
-            '966534390821',
-            $DB->get_field('user', 'phone1', ['id' => $current->id])
-        );
-        $this->assertSame('966534390821', $DB->get_field(
-            'local_qlogin_shomokh_verify',
-            'target',
-            ['userid' => $current->id, 'channel' => verification::PHONE]
-        ));
-        $this->assertSame(verification::PENDING, $DB->get_field(
-            'local_qlogin_shomokh_verify',
-            'state',
-            ['userid' => $current->id, 'channel' => verification::PHONE]
-        ));
+        $this->assertSame('966534390821',
+            $DB->get_field('local_qlogin_shomokh_alias', 'phone', ['userid' => $current->id]));
+        $this->assertSame('966534390821',
+            $DB->get_field('user', 'phone1', ['id' => $current->id]));
+        $this->assertSame('966534390821', $DB->get_field('local_qlogin_shomokh_verify',
+            'target', ['userid' => $current->id, 'channel' => verification::PHONE]));
+        $this->assertSame(verification::PENDING, $DB->get_field('local_qlogin_shomokh_verify',
+            'state', ['userid' => $current->id, 'channel' => verification::PHONE]));
     }
 }

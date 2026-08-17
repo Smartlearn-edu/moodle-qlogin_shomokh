@@ -1,18 +1,5 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** Integration health and administrator-requested mail test. @package local_qlogin_shomokh */
 require_once('../../config.php');
@@ -61,8 +48,7 @@ $provider = \local_qlogin_shomokh\mail\config::provider();
 [$apikey, $keysource] = \local_qlogin_shomokh\mail\config::resend_api_key();
 [$webhooksecret] = \local_qlogin_shomokh\mail\config::resend_webhook_secret();
 $sender = \local_qlogin_shomokh\manager::normalise_email(
-    (string)get_config('local_qlogin_shomokh', 'resendfromemail')
-);
+    (string)get_config('local_qlogin_shomokh', 'resendfromemail'));
 $legacy = \local_qlogin_shomokh\compatibility::legacy_status();
 $whatsappready = \local_qlogin_shomokh\compatibility::unified_whatsapp_ready();
 $configuredphoneid = trim((string)get_config('local_qlogin_shomokh', 'businessphonenumberid'));
@@ -71,36 +57,25 @@ if ($DB->get_manager()->table_exists('task_log')) {
     $lasttask = (int)$DB->get_field_sql('SELECT MAX(timestart) FROM {task_log}');
 }
 $checks = [
-    [get_string('health:provider', 'local_qlogin_shomokh'), get_string(
-        'mailprovider:' . $provider,
-        'local_qlogin_shomokh'
-    ), true],
-    [get_string('health:keysource', 'local_qlogin_shomokh'), get_string(
-        'health:keysource:' . $keysource,
-        'local_qlogin_shomokh'
-    ), $provider !== 'resend' || $apikey !== ''],
+    [get_string('health:provider', 'local_qlogin_shomokh'), get_string('mailprovider:' . $provider,
+        'local_qlogin_shomokh'), true],
+    [get_string('health:keysource', 'local_qlogin_shomokh'), get_string('health:keysource:' . $keysource,
+        'local_qlogin_shomokh'), $provider !== 'resend' || $apikey !== ''],
     [get_string('health:sender', 'local_qlogin_shomokh'), $sender === '' ? '-' : s($sender),
         $provider !== 'resend' || $sender !== ''],
-    [get_string('health:webhook', 'local_qlogin_shomokh'), $webhooksecret === '' ? '-' : get_string(
-        'health:ok',
-        'local_qlogin_shomokh'
-    ), $webhooksecret !== ''],
-    [get_string('health:cron', 'local_qlogin_shomokh'), $lasttask ? userdate($lasttask) : get_string(
-        'health:never',
-        'local_qlogin_shomokh'
-    ), $lasttask && time() - $lasttask < HOURSECS],
+    [get_string('health:webhook', 'local_qlogin_shomokh'), $webhooksecret === '' ? '-' : get_string('health:ok',
+        'local_qlogin_shomokh'), $webhooksecret !== ''],
+    [get_string('health:cron', 'local_qlogin_shomokh'), $lasttask ? userdate($lasttask) : get_string('health:never',
+        'local_qlogin_shomokh'), $lasttask && time() - $lasttask < HOURSECS],
     [get_string('health:whatsapp', 'local_qlogin_shomokh'),
         get_string($whatsappready ? 'health:ok' : 'health:whatsappmissing', 'local_qlogin_shomokh'),
         $whatsappready],
     [get_string('health:configuredphoneid', 'local_qlogin_shomokh'),
         $configuredphoneid === '' ? '-' : s($configuredphoneid), $configuredphoneid !== ''],
     [get_string('health:legacyplugin', 'local_qlogin_shomokh'),
-        get_string(
-            !$legacy['present'] ? 'health:legacynotpresent'
+        get_string(!$legacy['present'] ? 'health:legacynotpresent'
             : ($legacy['enabled'] ? 'health:legacyenabled' : 'health:legacydisabled'),
-            'local_qlogin_shomokh',
-            $legacy['records']
-        ),
+            'local_qlogin_shomokh', $legacy['records']),
         !$legacy['enabled']],
 ];
 
@@ -111,21 +86,15 @@ $checktable = new html_table();
 $checktable->head = [get_string('health:check', 'local_qlogin_shomokh'),
     get_string('health:result', 'local_qlogin_shomokh'), get_string('status')];
 foreach ($checks as [$label, $value, $okay]) {
-    $checktable->data[] = [$label, $value, get_string(
-        $okay ? 'health:ok' : 'health:warning',
-        'local_qlogin_shomokh'
-    )];
+    $checktable->data[] = [$label, $value, get_string($okay ? 'health:ok' : 'health:warning',
+        'local_qlogin_shomokh')];
 }
 $checktable->data[] = [get_string('health:webhookurl', 'local_qlogin_shomokh'),
-    (new moodle_url('/local/qlogin_shomokh/resend_webhook.php'))->out(false), get_string(
-        'health:ok',
-        'local_qlogin_shomokh'
-    )];
+    (new moodle_url('/local/qlogin_shomokh/resend_webhook.php'))->out(false), get_string('health:ok',
+        'local_qlogin_shomokh')];
 $checktable->data[] = [get_string('health:whatsappwebhookurl', 'local_qlogin_shomokh'),
-    (new moodle_url('/local/qlogin_shomokh/webhook.php'))->out(false), get_string(
-        'health:ok',
-        'local_qlogin_shomokh'
-    )];
+    (new moodle_url('/local/qlogin_shomokh/webhook.php'))->out(false), get_string('health:ok',
+        'local_qlogin_shomokh')];
 echo html_writer::table($checktable);
 
 echo $OUTPUT->heading(get_string('health:whatsappstats', 'local_qlogin_shomokh'), 3);
@@ -169,16 +138,13 @@ if ($latestwhatsapptest) {
     ]), $latestwhatsapptest->status === 'passed' ? 'success' : 'info');
 }
 if ($whatsapptesturl) {
-    echo html_writer::link(
-        $whatsapptesturl,
-        get_string('health:whatsapptestopen', 'local_qlogin_shomokh'),
-        [
+    echo html_writer::link($whatsapptesturl,
+        get_string('health:whatsapptestopen', 'local_qlogin_shomokh'), [
             'class' => 'btn btn-success btn-lg',
             'target' => '_blank',
             'rel' => 'noopener',
             'data-qlogin-whatsapp' => '1',
-        ]
-    );
+        ]);
     echo html_writer::start_tag('details', ['class' => 'mt-3']);
     echo html_writer::tag('summary', get_string('verify:manualfallback', 'local_qlogin_shomokh'));
     echo html_writer::tag('code', s('SHOMOKH TEST ' . $whatsapptestcode), [

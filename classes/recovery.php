@@ -1,18 +1,5 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** WhatsApp password recovery. @package local_qlogin_shomokh */
 namespace local_qlogin_shomokh;
@@ -39,14 +26,8 @@ final class recovery {
             unset($SESSION->local_qlogin_shomokh_recoverycode);
             return null;
         }
-        $latestrecords = $DB->get_records(
-            'local_qlogin_shomokh_recov',
-            ['userid' => $user->id],
-            'timecreated DESC',
-            '*',
-            0,
-            1
-        );
+        $latestrecords = $DB->get_records('local_qlogin_shomokh_recov', ['userid' => $user->id],
+            'timecreated DESC', '*', 0, 1);
         $latest = reset($latestrecords);
         $cooldown = max(60, (int)get_config('local_qlogin_shomokh', 'resendcooldown'));
         if ($latest && time() - $latest->timecreated < $cooldown) {
@@ -85,12 +66,9 @@ final class recovery {
         if ($phone === '' || !preg_match('/\bSHOMOKH\s+RESET\s+([A-HJ-NP-Z2-9]{10})\b/i', trim($message), $matches)) {
             return ['status' => 'invalidreset', 'userid' => null];
         }
-        $records = $DB->get_records_select(
-            'local_qlogin_shomokh_recov',
+        $records = $DB->get_records_select('local_qlogin_shomokh_recov',
             'phone = :phone AND state = :state AND expiresat >= :now',
-            ['phone' => $phone, 'state' => 'pending', 'now' => time()],
-            'timecreated DESC'
-        );
+            ['phone' => $phone, 'state' => 'pending', 'now' => time()], 'timecreated DESC');
         foreach ($records as $record) {
             if (hash_equals($record->tokenhash, manager::hash_token($matches[1]))) {
                 $record->state = 'verified';

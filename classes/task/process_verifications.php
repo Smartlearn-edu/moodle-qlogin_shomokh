@@ -1,18 +1,5 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** Daily verification processing. @package local_qlogin_shomokh */
 namespace local_qlogin_shomokh\task;
@@ -50,10 +37,8 @@ final class process_verifications extends \core\task\scheduled_task {
             $userid = (int)$row->userid;
             if (\local_qlogin_shomokh\verification::requires_enforcement($userid)) {
                 \local_qlogin_shomokh\enforcement::reconcile($userid);
-                $record = $DB->get_record(
-                    'local_qlogin_shomokh_verify',
-                    ['userid' => $userid, 'state' => \local_qlogin_shomokh\verification::EXPIRED]
-                );
+                $record = $DB->get_record('local_qlogin_shomokh_verify',
+                    ['userid' => $userid, 'state' => \local_qlogin_shomokh\verification::EXPIRED]);
                 if ($record) {
                     \local_qlogin_shomokh\verification::remind($record);
                 }
@@ -71,35 +56,21 @@ final class process_verifications extends \core\task\scheduled_task {
             $restrictedusers[(int)$lock->userid] = true;
         }
         foreach (array_keys($restrictedusers) as $userid) {
-            if (
-                !\local_qlogin_shomokh\verification::requires_enforcement($userid)
-                    || (string)get_config('local_qlogin_shomokh', 'expiredaction') === 'remind'
-            ) {
+            if (!\local_qlogin_shomokh\verification::requires_enforcement($userid)
+                    || (string)get_config('local_qlogin_shomokh', 'expiredaction') === 'remind') {
                 \local_qlogin_shomokh\enforcement::release($userid);
             }
         }
 
-        $DB->delete_records_select(
-            'local_qlogin_shomokh_recov',
-            'expiresat < :cutoff',
-            ['cutoff' => time() - DAYSECS]
-        );
-        $DB->delete_records_select(
-            'local_qlogin_shomokh_reset',
-            'expiresat < :cutoff',
-            ['cutoff' => time() - DAYSECS]
-        );
+        $DB->delete_records_select('local_qlogin_shomokh_recov',
+            'expiresat < :cutoff', ['cutoff' => time() - DAYSECS]);
+        $DB->delete_records_select('local_qlogin_shomokh_reset',
+            'expiresat < :cutoff', ['cutoff' => time() - DAYSECS]);
         $retentiondays = max(7, min(3650, (int)get_config('local_qlogin_shomokh', 'eventretentiondays')));
-        $DB->delete_records_select(
-            'local_qlogin_shomokh_event',
-            'timecreated < :cutoff',
-            ['cutoff' => time() - ($retentiondays * DAYSECS)]
-        );
+        $DB->delete_records_select('local_qlogin_shomokh_event',
+            'timecreated < :cutoff', ['cutoff' => time() - ($retentiondays * DAYSECS)]);
         $mailretention = max(7, min(3650, (int)get_config('local_qlogin_shomokh', 'maillogretentiondays')));
-        $DB->delete_records_select(
-            'local_qlogin_shomokh_mail',
-            'timecreated < :cutoff',
-            ['cutoff' => time() - ($mailretention * DAYSECS)]
-        );
+        $DB->delete_records_select('local_qlogin_shomokh_mail',
+            'timecreated < :cutoff', ['cutoff' => time() - ($mailretention * DAYSECS)]);
     }
 }

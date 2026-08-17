@@ -1,18 +1,5 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace local_qlogin_shomokh\form;
 
@@ -26,12 +13,8 @@ final class auth_form extends \moodleform {
         $action = ($this->_customdata['action'] ?? 'login') === 'register' ? 'register' : 'login';
         $mform->addElement('hidden', 'action', $action);
         $mform->setType('action', PARAM_ALPHA);
-        $mform->addElement(
-            'text',
-            'website',
-            get_string('website', 'local_qlogin_shomokh'),
-            ['tabindex' => '-1', 'autocomplete' => 'off']
-        );
+        $mform->addElement('text', 'website', get_string('website', 'local_qlogin_shomokh'),
+            ['tabindex' => '-1', 'autocomplete' => 'off']);
         $mform->setType('website', PARAM_NOTAGS);
         $mform->addElement('text', 'identifier', get_string('loginidentifier', 'local_qlogin_shomokh'), [
             'autocomplete' => 'username',
@@ -47,28 +30,16 @@ final class auth_form extends \moodleform {
         $mform->setType('phone', PARAM_NOTAGS);
         $mform->addHelpButton('phone', 'phone', 'local_qlogin_shomokh');
         $mform->addElement('hidden', 'phonecountrycode', '');
-        $mform->setType('phonecountrycode', PARAM_ALPHANUM);
-        $mform->addElement(
-            'text',
-            'fullname',
-            get_string('fullname', 'local_qlogin_shomokh'),
-            ['autocomplete' => 'name', 'maxlength' => '201']
-        );
+        $mform->setType('phonecountrycode', PARAM_INT);
+        $mform->addElement('text', 'fullname', get_string('fullname', 'local_qlogin_shomokh'),
+            ['autocomplete' => 'name', 'maxlength' => '201']);
         $mform->setType('fullname', PARAM_TEXT);
-        $mform->addElement(
-            'text',
-            'email',
-            get_string('email', 'local_qlogin_shomokh'),
-            ['autocomplete' => 'email', 'type' => 'email', 'maxlength' => '254']
-        );
+        $mform->addElement('text', 'email', get_string('email', 'local_qlogin_shomokh'),
+            ['autocomplete' => 'email', 'type' => 'email', 'maxlength' => '254']);
         $mform->setType('email', PARAM_EMAIL);
         $mform->addRule('email', null, 'email', null, 'client');
-        $mform->addElement(
-            'password',
-            'password',
-            get_string('password', 'local_qlogin_shomokh'),
-            ['autocomplete' => $action === 'register' ? 'new-password' : 'current-password']
-        );
+        $mform->addElement('password', 'password', get_string('password', 'local_qlogin_shomokh'),
+            ['autocomplete' => $action === 'register' ? 'new-password' : 'current-password']);
         $mform->setType('password', PARAM_RAW);
         $mform->addRule('password', null, 'required', null, 'client');
         $this->add_action_buttons(false, get_string(
@@ -101,10 +72,8 @@ final class auth_form extends \moodleform {
                 $errors['fullname'] = get_string('error:fullname', 'local_qlogin_shomokh');
             } else {
                 $nameparts = preg_split('/\s+/u', $fullname, 2);
-                if (
-                    \core_text::strlen($nameparts[0]) > 100
-                        || \core_text::strlen($nameparts[1] ?? '-') > 100
-                ) {
+                if (\core_text::strlen($nameparts[0]) > 100
+                        || \core_text::strlen($nameparts[1] ?? '-') > 100) {
                     $errors['fullname'] = get_string('error:fullnamelong', 'local_qlogin_shomokh');
                 }
             }
@@ -113,13 +82,8 @@ final class auth_form extends \moodleform {
                 $errors['email'] = get_string('error:email', 'local_qlogin_shomokh');
             } else {
                 $emailsql = $DB->sql_equal('email', ':email', false);
-                if (
-                    $DB->record_exists_select(
-                        'user',
-                        "$emailsql AND deleted = :deleted",
-                        ['email' => $email, 'deleted' => 0]
-                    )
-                ) {
+                if ($DB->record_exists_select('user', "$emailsql AND deleted = :deleted",
+                        ['email' => $email, 'deleted' => 0])) {
                     $key = \local_qlogin_shomokh\migration::self_claim_available()
                         ? 'error:emailexistsclaim' : 'error:emailexists';
                     $errors['email'] = get_string($key, 'local_qlogin_shomokh');
