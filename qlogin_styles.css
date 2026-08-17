@@ -388,6 +388,7 @@
 
 #qlogin-wrapper .iti {
     direction: ltr;
+    position: relative;
     width: 100%;
 }
 
@@ -414,11 +415,12 @@
     border-color: #9aa4ad !important;
     color: #17212b !important;
     direction: ltr;
-    max-width: calc(100vw - 2rem);
+    left: 0;
+    max-width: 100%;
     text-align: left;
-    width: min(23rem, calc(100vw - 2rem));
     white-space: normal;
-    z-index: 1000;
+    width: 100%;
+    z-index: 1050;
 }
 
 #qlogin-wrapper .iti__country {

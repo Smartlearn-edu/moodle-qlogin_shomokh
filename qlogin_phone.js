@@ -146,7 +146,6 @@ document.addEventListener('DOMContentLoaded', function() {
         separateDialCode: true,
         preferredCountries: [],
         customContainer: 'qlogin-phone-picker notranslate',
-        dropdownContainer: root || document.body,
         utilsScript: M.cfg.wwwroot + '/local/qlogin_shomokh/vendor/intl-tel-input/build/js/utils.js'
     });
     var countryCodeInput = form.querySelector('input[name="phonecountrycode"]');
@@ -166,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (container) {
         container.classList.add('notranslate');
         container.setAttribute('translate', 'no');
-        var countrylist = (root || document).querySelector('.iti__country-list');
+        var countrylist = container.querySelector('.iti__country-list') || document.querySelector('.iti__country-list');
         if (countrylist) {
             countrylist.classList.add('notranslate');
             countrylist.setAttribute('translate', 'no');
