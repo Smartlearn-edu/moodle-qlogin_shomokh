@@ -11,9 +11,17 @@ final class migration {
     /** Whether self-service linking is enabled with phone verification ready. */
     public static function self_claim_available(): bool {
         global $DB;
-        return (bool)get_config('local_qlogin_shomokh', 'selfclaimenabled')
-            && (bool)get_config('local_qlogin_shomokh', 'enabled')
-            && (bool)get_config('local_qlogin_shomokh', 'requirephone')
+        $selfclaim = get_config('local_qlogin_shomokh', 'selfclaimenabled');
+        $enabled = get_config('local_qlogin_shomokh', 'enabled');
+        $requirephone = get_config('local_qlogin_shomokh', 'requirephone');
+
+        $selfclaimenabled = $selfclaim === false || !empty($selfclaim);
+        $isenabled = $enabled === false || !empty($enabled);
+        $isrequirephone = $requirephone === false || !empty($requirephone);
+
+        return $selfclaimenabled
+            && $isenabled
+            && $isrequirephone
             && $DB->get_manager()->table_exists('local_qlogin_shomokh_alias')
             && $DB->get_manager()->table_exists('local_qlogin_shomokh_verify');
     }
@@ -25,10 +33,13 @@ final class migration {
                 || !self::self_claim_available()) {
             return false;
         }
-        $types = array_filter(array_map('trim', explode(',',
-            (string)get_config('local_qlogin_shomokh', 'authtypes'))));
-        return in_array((string)$user->auth, $types ?: ['manual', 'email'], true)
-            && self::phone_for_user($user) === '';
+        $rawtypes = (string)get_config('local_qlogin_shomokh', 'authtypes');
+        $types = array_filter(array_map('trim', explode(',', $rawtypes)));
+        $types = $types ?: ['manual', 'email'];
+        if (!in_array((string)$user->auth, $types, true) && !in_array((string)$user->auth, ['manual', 'email'], true)) {
+            return false;
+        }
+        return self::phone_for_user($user) === '';
     }
 
     /**
@@ -133,15 +144,15 @@ final class migration {
         }
     }
 
-    /** Whether a signed-in account is allowed to add or replace its phone. */
     public static function user_can_manage_phone(\stdClass $user): bool {
         if (empty($user->id) || !empty($user->deleted) || !empty($user->suspended)
                 || is_siteadmin($user->id) || !self::self_claim_available()) {
             return false;
         }
-        $types = array_filter(array_map('trim', explode(',',
-            (string)get_config('local_qlogin_shomokh', 'authtypes'))));
-        return in_array((string)$user->auth, $types ?: ['manual'], true);
+        $rawtypes = (string)get_config('local_qlogin_shomokh', 'authtypes');
+        $types = array_filter(array_map('trim', explode(',', $rawtypes)));
+        $types = $types ?: ['manual', 'email'];
+        return in_array((string)$user->auth, $types, true) || in_array((string)$user->auth, ['manual', 'email'], true);
     }
 
     /** Marks an active alias verified after the matching WhatsApp message succeeds. */
