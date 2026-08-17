@@ -1,0 +1,600 @@
+/* 
+ * Simple, responsive styles for local_qlogin_shomokh.
+ * SCOPED ONLY to pages with #qlogin-wrapper
+ */
+
+/* Main Wrapper - Centers the form */
+#qlogin-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 70vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* The login card container */
+#qlogin-wrapper .qlogin-card {
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Logo Section */
+#qlogin-wrapper .qlogin-logo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#qlogin-wrapper .qlogin-logo img {
+    max-height: 60px;
+    width: auto;
+}
+
+#qlogin-wrapper .qlogin-logo .site-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #25313c !important;
+    margin-top: 8px;
+}
+
+#qlogin-wrapper .qlogin-card h1,
+#qlogin-wrapper .qlogin-card h2,
+#qlogin-wrapper .qlogin-card h3,
+#qlogin-wrapper .qlogin-card > p {
+    color: #25313c !important;
+}
+
+/* Tabs */
+#qlogin-wrapper .auth-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #eee;
+}
+
+#qlogin-wrapper .tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #4b5863 !important;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+#qlogin-wrapper .tab-btn:hover {
+    color: #25313c !important;
+}
+
+#qlogin-wrapper .tab-btn.active {
+    color: #0073aa !important;
+    border-bottom-color: #0073aa;
+}
+
+/* Form Title */
+#qlogin-wrapper .form-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 0 0 5px 0;
+    color: #25313c !important;
+    text-align: center;
+}
+
+#qlogin-wrapper .form-subtitle {
+    font-size: 0.9rem;
+    color: #4b5863 !important;
+    margin: 0 0 20px 0;
+    text-align: center;
+}
+
+/* Alerts */
+#qlogin-wrapper .alert {
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+#qlogin-wrapper .alert-danger {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+#qlogin-wrapper .alert-success {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+/* Form Groups */
+#qlogin-wrapper .form-group {
+    margin-bottom: 15px;
+}
+
+#qlogin-wrapper .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #444;
+}
+
+#qlogin-wrapper .form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+/* Moodle themes may apply light text to login-form labels and inputs. Keep the
+   white registration card readable in both the light and dark site modes. */
+#qlogin-wrapper .mform label,
+#qlogin-wrapper .mform .col-form-label {
+    color: #25313c !important;
+}
+
+#qlogin-wrapper .mform .form-control {
+    background-color: #fff !important;
+    border-color: #9aa4ad !important;
+    color: #17212b !important;
+}
+
+#qlogin-wrapper .mform .form-control::placeholder {
+    color: #68737d !important;
+    opacity: 1;
+}
+
+#qlogin-wrapper .mform .form-control-feedback,
+#qlogin-wrapper .mform .form-text,
+#qlogin-wrapper .mform .form-label-addon {
+    color: #4b5863 !important;
+}
+
+#qlogin-wrapper .form-control:focus {
+    outline: none;
+    border-color: #0073aa;
+    box-shadow: 0 0 0 2px rgba(0, 115, 170, 0.15);
+}
+
+/* Login Method Switch */
+#qlogin-wrapper .method-switch {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+#qlogin-wrapper .method-option {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #666;
+    transition: all 0.2s;
+}
+
+#qlogin-wrapper .method-option:hover {
+    background: #f5f5f5;
+}
+
+#qlogin-wrapper .method-option input {
+    display: none;
+}
+
+#qlogin-wrapper .method-option.selected {
+    background: #0073aa;
+    color: #fff;
+    border-color: #0073aa;
+}
+
+/* Primary Button */
+#qlogin-wrapper .btn-primary {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background: #0073aa;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#qlogin-wrapper .btn-primary:hover {
+    background: #005a87;
+}
+
+/* Google Button */
+#qlogin-wrapper .btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+#qlogin-wrapper .btn-google:hover {
+    background: #f5f5f5;
+}
+
+/* Divider */
+#qlogin-wrapper .divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    color: #999;
+    font-size: 0.8rem;
+}
+
+#qlogin-wrapper .divider::before,
+#qlogin-wrapper .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #ddd;
+}
+
+#qlogin-wrapper .divider span {
+    padding: 0 10px;
+}
+
+/* Honeypot Hidden */
+#qlogin-wrapper .hp-field {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 0;
+    width: 0;
+    z-index: -1;
+}
+
+/* Hidden Utility */
+#qlogin-wrapper .hidden {
+    display: none !important;
+}
+
+/* Responsive: Mobile */
+@media (max-width: 480px) {
+    #qlogin-wrapper {
+        padding: 15px;
+    }
+
+    #qlogin-wrapper .qlogin-card {
+        padding: 20px;
+    }
+
+    #qlogin-wrapper .tab-btn {
+        font-size: 0.8rem;
+        padding: 8px 5px;
+    }
+
+    #qlogin-wrapper .form-title {
+        font-size: 1.2rem;
+    }
+}
+
+#qlogin-wrapper .form-help {
+    color: #4b5863 !important;
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+#qlogin-wrapper .forgot-password-link {
+    margin-top: 7px;
+    text-align: end;
+}
+
+#qlogin-wrapper .forgot-password-link a {
+    color: #006b85 !important;
+}
+
+#qlogin-wrapper .existing-account-link {
+    border-top: 1px solid #d9dee2;
+    margin-top: 16px;
+    padding-top: 14px;
+    text-align: center;
+}
+
+#qlogin-wrapper .existing-account-link a {
+    color: #006b85 !important;
+    font-weight: 600;
+}
+
+.local-qlogin-shomokh-banner {
+    align-items: center;
+    background: #fff7d6;
+    border: 1px solid #e7c864;
+    border-radius: 6px;
+    color: #4a3a00;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin: 1rem auto;
+    max-width: 1200px;
+    padding: 0.75rem 1rem;
+    position: relative;
+    width: calc(100% - 2rem);
+    z-index: 1040;
+}
+
+.local-qlogin-shomokh-banner__message {
+    flex: 1 1 auto;
+}
+
+.local-qlogin-shomokh-banner__button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+/* The unified plugin owns the student verification prompt. The retired
+   companion plugin can keep its data during rollback without showing a
+   second sticky action. Its direct student URL is redirected server-side. */
+.local-phoneverify-banner {
+    display: none !important;
+}
+
+#qlogin-wrapper #fitem_id_website {
+    height: 0;
+    left: -10000px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    width: 0;
+}
+
+#qlogin-wrapper .mform .col-form-label,
+#qlogin-wrapper .mform .form-inline .form-control {
+    max-width: none;
+    width: 100%;
+}
+
+#qlogin-wrapper .mform .fitem {
+    margin-bottom: 0.75rem;
+}
+
+/* Render the initial server-selected mode correctly before JavaScript runs. */
+#qlogin-wrapper[data-mode="login"] #fitem_id_fullname,
+#qlogin-wrapper[data-mode="login"] #fitem_id_email,
+#qlogin-wrapper[data-mode="login"] #fitem_id_phone,
+#qlogin-wrapper[data-mode="register"] #fitem_id_identifier {
+    display: none !important;
+}
+
+#qlogin-wrapper .iti {
+    direction: ltr;
+    width: 100%;
+}
+
+/* Keep the bundled phone-country picker readable inside themes that use light
+   text on dark pages. These rules are deliberately scoped to this plugin. */
+#qlogin-wrapper .iti__selected-flag {
+    background: #f3f5f7 !important;
+    color: #17212b !important;
+    max-width: 7.5rem;
+    overflow: hidden;
+}
+
+#qlogin-wrapper .iti__selected-dial-code,
+#qlogin-wrapper .iti__country-name {
+    color: #17212b !important;
+}
+
+#qlogin-wrapper .iti__dial-code {
+    color: #53606c !important;
+}
+
+#qlogin-wrapper .iti__country-list {
+    background: #fff !important;
+    border-color: #9aa4ad !important;
+    color: #17212b !important;
+    direction: ltr;
+    max-width: calc(100vw - 2rem);
+    text-align: left;
+    width: min(23rem, calc(100vw - 2rem));
+    white-space: normal;
+    z-index: 1000;
+}
+
+#qlogin-wrapper .iti__country {
+    background: #fff !important;
+    color: #17212b !important;
+    display: flex;
+    gap: 0.35rem;
+    min-height: 2.4rem;
+}
+
+#qlogin-wrapper .iti__country-name {
+    flex: 1 1 auto;
+    overflow-wrap: anywhere;
+}
+
+#qlogin-wrapper .iti__country.iti__highlight,
+#qlogin-wrapper .iti__country.iti__active {
+    background: #e8f2f7 !important;
+}
+
+#qlogin-wrapper input[type="password"].form-control {
+    direction: ltr;
+    min-height: 2.75rem;
+}
+
+#qlogin-wrapper .qlogin-password-container {
+    position: relative;
+}
+
+#qlogin-wrapper .qlogin-password-container .form-control {
+    padding-inline-end: 3rem !important;
+}
+
+#qlogin-wrapper .qlogin-password-toggle {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    color: #344b5e;
+    cursor: pointer;
+    display: flex;
+    height: 2.25rem;
+    inset-inline-end: 0.35rem;
+    justify-content: center;
+    padding: 0.35rem;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2.25rem;
+    z-index: 3;
+}
+
+#qlogin-wrapper .qlogin-password-toggle:hover,
+#qlogin-wrapper .qlogin-password-toggle:focus-visible {
+    color: #006b85;
+}
+
+#qlogin-wrapper .qlogin-password-toggle:focus-visible {
+    border-radius: 0.3rem;
+    outline: 2px solid #0073aa;
+    outline-offset: 1px;
+}
+
+#qlogin-wrapper .qlogin-password-toggle svg {
+    fill: currentColor;
+    height: 1.25rem;
+    width: 1.25rem;
+}
+
+.local-qlogin-code {
+    background: #f3f5f7;
+    border: 1px solid #c8d0d6;
+    border-radius: 0.4rem;
+    color: #17212b;
+    direction: ltr;
+    display: inline-block;
+    font-size: 1.1rem;
+    letter-spacing: 0.06em;
+    padding: 0.65rem;
+}
+
+.local-qlogin-verification {
+    margin: 0 auto;
+    max-width: 50rem;
+}
+
+.local-qlogin-verification__intro {
+    color: inherit;
+    font-size: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.local-qlogin-verify-card {
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid var(--bs-border-color, #d6dce1);
+    border-radius: 0.75rem;
+    box-shadow: 0 0.15rem 0.55rem rgba(0, 0, 0, 0.06);
+    margin-bottom: 1.25rem;
+    padding: 1.25rem;
+}
+
+.local-qlogin-verify-card h2 {
+    font-size: 1.35rem;
+    margin-bottom: 1rem;
+}
+
+.local-qlogin-verification__steps {
+    line-height: 1.8;
+    margin-block: 1rem;
+    padding-inline-start: 1.5rem;
+}
+
+.local-qlogin-verification__primary {
+    margin: 1.25rem 0;
+    text-align: center;
+}
+
+.local-qlogin-verification__primary .singlebutton,
+.local-qlogin-verification__primary form {
+    margin: 0;
+}
+
+.local-qlogin-verification__primary .btn,
+.local-qlogin-whatsapp-primary {
+    background: #087d42 !important;
+    border-color: #087d42 !important;
+    color: #fff !important;
+    font-size: 1.05rem;
+    font-weight: 600;
+    min-height: 3.25rem;
+    padding: 0.75rem 1.25rem;
+    width: min(100%, 30rem);
+}
+
+.local-qlogin-verification__primary .btn:hover,
+.local-qlogin-verification__primary .btn:focus,
+.local-qlogin-whatsapp-primary:hover,
+.local-qlogin-whatsapp-primary:focus {
+    background: #056735 !important;
+    border-color: #056735 !important;
+}
+
+.local-qlogin-verification details {
+    border-top: 1px solid var(--bs-border-color, #d6dce1);
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+}
+
+.local-qlogin-verification summary {
+    color: var(--bs-link-color, #075e78);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.local-qlogin-verification__fallback p,
+.local-qlogin-verification__trouble p {
+    margin-top: 0.75rem;
+}
+
+.local-qlogin-verification__continue {
+    margin-block: 1rem 2rem;
+}
+
+@media (max-width: 575.98px) {
+    .local-qlogin-shomokh-banner {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .local-qlogin-shomokh-banner__button {
+        text-align: center;
+        white-space: normal;
+        width: 100%;
+    }
+
+    .local-qlogin-verify-card {
+        border-radius: 0.5rem;
+        padding: 1rem;
+    }
+}
