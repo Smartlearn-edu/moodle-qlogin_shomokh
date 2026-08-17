@@ -363,5 +363,15 @@ function xmldb_local_qlogin_shomokh_upgrade(int $oldversion): bool {
         }
         upgrade_plugin_savepoint(true, 2026081719, 'local', 'qlogin_shomokh');
     }
+    if ($oldversion < 2026081800) {
+        // No schema change. Restore the proven in-card country-dropdown
+        // positioning after an intermediate body-level layout regression.
+        upgrade_plugin_savepoint(true, 2026081800, 'local', 'qlogin_shomokh');
+    }
+    if ($oldversion < 2026081801) {
+        // No schema change. Keep the dropdown attached to the telephone picker,
+        // matching the previously verified layout instead of a page container.
+        upgrade_plugin_savepoint(true, 2026081801, 'local', 'qlogin_shomokh');
+    }
     return true;
 }

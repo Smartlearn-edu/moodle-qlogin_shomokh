@@ -146,7 +146,6 @@ document.addEventListener('DOMContentLoaded', function() {
         separateDialCode: true,
         preferredCountries: [],
         customContainer: 'qlogin-phone-picker notranslate',
-        dropdownContainer: document.body,
         utilsScript: M.cfg.wwwroot + '/local/qlogin_shomokh/vendor/intl-tel-input/build/js/utils.js'
     });
     var countryCodeInput = form.querySelector('input[name="phonecountrycode"]');
@@ -166,44 +165,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (container) {
         container.classList.add('notranslate');
         container.setAttribute('translate', 'no');
-    }
-
-    function prepareCountryList() {
-        var selectedFlag = container ? container.querySelector('.iti__selected-flag') : null;
-        var listId = selectedFlag ? selectedFlag.getAttribute('aria-controls') : '';
-        var countrylist = listId ? document.getElementById(listId) : null;
+        var countrylist = container.querySelector('.iti__country-list') || document.querySelector('.iti__country-list');
         if (countrylist) {
-            countrylist.classList.add('qlogin-country-list', 'notranslate');
+            countrylist.classList.add('notranslate');
             countrylist.setAttribute('translate', 'no');
-            var dropdown = countrylist.closest('.iti--container');
-            if (dropdown) {
-                dropdown.classList.add('qlogin-country-dropdown', 'notranslate');
-                dropdown.setAttribute('translate', 'no');
-            }
         }
     }
-    input.addEventListener('open:countrydropdown', function() {
-        prepareCountryList();
-        // Body-level dropdowns are positioned from the input's left edge.
-        // Clamp the list so it remains visible in RTL and narrow layouts.
-        window.requestAnimationFrame(function() {
-            var countrylist = document.querySelector('.qlogin-country-list:not(.iti__hide)');
-            var dropdown = countrylist ? countrylist.closest('.qlogin-country-dropdown') : null;
-            if (!countrylist || !dropdown || document.body.classList.contains('iti-mobile')) {
-                return;
-            }
-            var margin = 8;
-            var rect = countrylist.getBoundingClientRect();
-            var left = parseFloat(dropdown.style.left || '0');
-            if (rect.right > window.innerWidth - margin) {
-                left -= rect.right - (window.innerWidth - margin);
-            }
-            if (rect.left < margin) {
-                left += margin - rect.left;
-            }
-            dropdown.style.left = Math.max(margin, left) + 'px';
-        });
-    });
 
     form.addEventListener('submit', function() {
         syncCountryCode();
