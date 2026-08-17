@@ -1,5 +1,18 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace local_qlogin_shomokh;
 
@@ -19,12 +32,18 @@ final class manager_test extends \advanced_testcase {
     }
 
     public function test_admin_repair_removes_one_accidental_country_code_duplicate(): void {
-        $this->assertSame('966534390821',
-            manager::remove_repeated_country_code('966966534390821', '966'));
-        $this->assertSame('201001234567',
-            manager::remove_repeated_country_code('20201001234567', '20'));
-        $this->assertSame('14155550123',
-            manager::remove_repeated_country_code('14155550123', '1'));
+        $this->assertSame(
+            '966534390821',
+            manager::remove_repeated_country_code('966966534390821', '966')
+        );
+        $this->assertSame(
+            '201001234567',
+            manager::remove_repeated_country_code('20201001234567', '20')
+        );
+        $this->assertSame(
+            '14155550123',
+            manager::remove_repeated_country_code('14155550123', '1')
+        );
     }
 
     public function test_normalises_and_validates_email_addresses(): void {

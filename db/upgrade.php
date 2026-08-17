@@ -1,5 +1,18 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** Database upgrades. @package local_qlogin_shomokh */
 defined('MOODLE_INTERNAL') || die();
@@ -166,12 +179,14 @@ function xmldb_local_qlogin_shomokh_upgrade(int $oldversion): bool {
         if (get_config('local_qlogin_shomokh', 'graceperioddays') === false) {
             set_config('graceperioddays', 30, 'local_qlogin_shomokh');
         }
-        foreach ([
+        foreach (
+            [
             'enabled' => 1, 'requireemail' => 1, 'requirephone' => 1, 'expiredaction' => 'remind',
             'reminderintervaldays' => 7, 'maxreminders' => 3, 'resendcooldown' => 600,
             'authtypes' => 'manual', 'recoveryenabled' => 1, 'recoveryexpiryminutes' => 15,
             'eventretentiondays' => 90,
-        ] as $name => $value) {
+            ] as $name => $value
+        ) {
             if (get_config('local_qlogin_shomokh', $name) === false) {
                 set_config($name, $value, 'local_qlogin_shomokh');
             }
@@ -292,11 +307,13 @@ function xmldb_local_qlogin_shomokh_upgrade(int $oldversion): bool {
             $dbman->create_table($table);
         }
 
-        foreach ([
+        foreach (
+            [
             'mailprovider' => 'resend', 'resendfromemail' => '', 'resendfromname' => 'Shomokh Al-Elm',
             'resendtimeout' => 8, 'mailmaxattempts' => 5, 'emailrecoveryenabled' => 1,
             'maillogretentiondays' => 90, 'legacydefaultcountrycode' => '966',
-        ] as $name => $value) {
+            ] as $name => $value
+        ) {
             if (get_config('local_qlogin_shomokh', $name) === false) {
                 set_config($name, $value, 'local_qlogin_shomokh');
             }

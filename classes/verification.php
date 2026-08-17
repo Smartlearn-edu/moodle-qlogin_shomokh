@@ -1,5 +1,18 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** Unified verification service. @package local_qlogin_shomokh */
 namespace local_qlogin_shomokh;
@@ -117,12 +130,16 @@ final class verification {
      */
     public static function bootstrap_existing_user(\stdClass $user): array {
         global $DB;
-        if (!self::available() || empty($user->id) || is_siteadmin($user->id)
-                || !empty($user->deleted) || !empty($user->suspended)) {
+        if (
+            !self::available() || empty($user->id) || is_siteadmin($user->id)
+                || !empty($user->deleted) || !empty($user->suspended)
+        ) {
             return [];
         }
-        $types = array_filter(array_map('trim', explode(',',
-            (string)get_config('local_qlogin_shomokh', 'authtypes'))));
+        $types = array_filter(array_map('trim', explode(
+            ',',
+            (string)get_config('local_qlogin_shomokh', 'authtypes')
+        )));
         if (!in_array((string)$user->auth, $types ?: ['manual'], true)) {
             return [];
         }
@@ -145,13 +162,17 @@ final class verification {
             if ($untracked) {
                 foreach (self::required_channels() as $channel) {
                     $record = self::ensure_channel($user, $channel);
-                    if ($channel === self::EMAIL
-                            && manager::normalise_email((string)$user->email) !== '') {
+                    if (
+                        $channel === self::EMAIL
+                            && manager::normalise_email((string)$user->email) !== ''
+                    ) {
                         self::mark_verified($record);
                     }
                 }
-            } else if (in_array(self::PHONE, self::required_channels(), true)
-                    && !isset($records[self::PHONE])) {
+            } else if (
+                in_array(self::PHONE, self::required_channels(), true)
+                    && !isset($records[self::PHONE])
+            ) {
                 $emailrecord = $records[self::EMAIL] ?? null;
                 if (!$emailrecord || self::record_complete($emailrecord)) {
                     self::ensure_channel($user, self::PHONE);
@@ -169,12 +190,16 @@ final class verification {
 
     /** Tracks a newly created account without trusting either contact channel. */
     public static function track_new_user(\stdClass $user): array {
-        if (!self::available() || empty($user->id) || is_siteadmin($user->id)
-                || !empty($user->deleted) || !empty($user->suspended)) {
+        if (
+            !self::available() || empty($user->id) || is_siteadmin($user->id)
+                || !empty($user->deleted) || !empty($user->suspended)
+        ) {
             return [];
         }
-        $types = array_filter(array_map('trim', explode(',',
-            (string)get_config('local_qlogin_shomokh', 'authtypes'))));
+        $types = array_filter(array_map('trim', explode(
+            ',',
+            (string)get_config('local_qlogin_shomokh', 'authtypes')
+        )));
         if (!in_array((string)$user->auth, $types ?: ['manual'], true)) {
             return [];
         }
@@ -240,8 +265,10 @@ final class verification {
         }
         foreach (self::required_channels() as $channel) {
             $record = self::get($userid, $channel);
-            if ($record && !self::record_complete($record)
-                    && ($record->state === self::EXPIRED || (int)$record->expiresat < time())) {
+            if (
+                $record && !self::record_complete($record)
+                    && ($record->state === self::EXPIRED || (int)$record->expiresat < time())
+            ) {
                 return true;
             }
         }
@@ -260,8 +287,12 @@ final class verification {
         }
         self::check_cooldown($record, $cooldown);
         $record->lastsentat = time();
-        $token = \local_qlogin_shomokh\mail\config::derive_token('verification', (int)$record->id,
-            (int)$user->id, (int)$record->lastsentat);
+        $token = \local_qlogin_shomokh\mail\config::derive_token(
+            'verification',
+            (int)$record->id,
+            (int)$user->id,
+            (int)$record->lastsentat
+        );
         $record->tokenhash = manager::hash_token($token);
         $record->state = self::PENDING;
         $record->timemodified = time();
@@ -292,8 +323,12 @@ final class verification {
         if (!$record || !$user || self::record_complete($record) || $record->tokenhash === '') {
             return;
         }
-        $token = \local_qlogin_shomokh\mail\config::derive_token('verification', (int)$record->id,
-            (int)$user->id, (int)$record->lastsentat);
+        $token = \local_qlogin_shomokh\mail\config::derive_token(
+            'verification',
+            (int)$record->id,
+            (int)$user->id,
+            (int)$record->lastsentat
+        );
         if (!hash_equals($record->tokenhash, manager::hash_token($token))) {
             // Upgrade legacy queued mail to the deterministic, retry-safe format.
             self::issue_email($user, false);
@@ -468,8 +503,13 @@ final class verification {
         global $DB;
         [$channelsql, $channelparams] = $DB->get_in_or_equal([$channel, 'all'], SQL_PARAMS_NAMED, 'exchannel');
         $params = ['userscope' => 'user', 'userid' => $userid] + $channelparams;
-        if ($DB->record_exists_select('local_qlogin_shomokh_exempt',
-                "scope = :userscope AND scopeid = :userid AND channel $channelsql", $params)) {
+        if (
+            $DB->record_exists_select(
+                'local_qlogin_shomokh_exempt',
+                "scope = :userscope AND scopeid = :userid AND channel $channelsql",
+                $params
+            )
+        ) {
             return true;
         }
         $sql = "SELECT 1
@@ -477,7 +517,9 @@ final class verification {
                   JOIN {cohort_members} cm ON cm.cohortid = e.scopeid
                  WHERE e.scope = :cohortscope AND cm.userid = :userid AND e.channel $channelsql";
         return $DB->record_exists_sql(
-            $sql, ['cohortscope' => 'cohort', 'userid' => $userid] + $channelparams);
+            $sql,
+            ['cohortscope' => 'cohort', 'userid' => $userid] + $channelparams
+        );
     }
 
     /** Adds or updates an exemption. */
@@ -510,8 +552,13 @@ final class verification {
         global $DB;
         $now = time();
         $grace = self::grace_seconds();
-        foreach ($DB->get_records_select('local_qlogin_shomokh_verify',
-            'state = :pending OR state = :expired', ['pending' => self::PENDING, 'expired' => self::EXPIRED]) as $record) {
+        foreach (
+            $DB->get_records_select(
+                'local_qlogin_shomokh_verify',
+                'state = :pending OR state = :expired',
+                ['pending' => self::PENDING, 'expired' => self::EXPIRED]
+            ) as $record
+        ) {
             $deadline = (int)$record->timecreated + $grace;
             $state = $record->state === self::EXPIRED && $deadline >= $now ? self::PENDING : $record->state;
             if ((int)$record->expiresat !== $deadline || $state !== $record->state) {
@@ -521,8 +568,11 @@ final class verification {
                 $DB->update_record('local_qlogin_shomokh_verify', $record);
             }
         }
-        $records = $DB->get_records_select('local_qlogin_shomokh_verify',
-            'state = :state AND expiresat > 0 AND expiresat < :now', ['state' => self::PENDING, 'now' => $now]);
+        $records = $DB->get_records_select(
+            'local_qlogin_shomokh_verify',
+            'state = :state AND expiresat > 0 AND expiresat < :now',
+            ['state' => self::PENDING, 'now' => $now]
+        );
         $users = [];
         foreach ($records as $record) {
             $record->state = self::EXPIRED;
@@ -632,8 +682,12 @@ final class verification {
         }
         $remaining = self::cooldown_remaining($record);
         if ($remaining > 0) {
-            throw new \moodle_exception('waitbeforeresend', 'local_qlogin_shomokh', '',
-                $remaining);
+            throw new \moodle_exception(
+                'waitbeforeresend',
+                'local_qlogin_shomokh',
+                '',
+                $remaining
+            );
         }
     }
 }

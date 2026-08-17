@@ -1,5 +1,18 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace local_qlogin_shomokh\form;
 
@@ -20,11 +33,15 @@ final class link_existing_form extends \moodleform {
         $mform->setType('website', PARAM_NOTAGS);
 
         if (!$authenticated) {
-            $mform->addElement('text', 'identifier',
-                get_string('claim:identifier', 'local_qlogin_shomokh'), [
+            $mform->addElement(
+                'text',
+                'identifier',
+                get_string('claim:identifier', 'local_qlogin_shomokh'),
+                [
                     'autocomplete' => 'username',
                     'maxlength' => '254',
-                ]);
+                ]
+            );
             $mform->setType('identifier', PARAM_RAW_TRIMMED);
             $mform->addRule('identifier', null, 'required', null, 'client');
 
@@ -34,10 +51,14 @@ final class link_existing_form extends \moodleform {
             $mform->setType('password', PARAM_RAW);
             $mform->addRule('password', null, 'required', null, 'client');
         } else if ($changing) {
-            $mform->addElement('password', 'password',
-                get_string('claim:currentpassword', 'local_qlogin_shomokh'), [
+            $mform->addElement(
+                'password',
+                'password',
+                get_string('claim:currentpassword', 'local_qlogin_shomokh'),
+                [
                     'autocomplete' => 'current-password',
-                ]);
+                ]
+            );
             $mform->setType('password', PARAM_RAW);
             $mform->addRule('password', null, 'required', null, 'client');
         }
@@ -55,8 +76,10 @@ final class link_existing_form extends \moodleform {
         $mform->addElement('hidden', 'phonecountrycode', '');
         $mform->setType('phonecountrycode', PARAM_ALPHANUM);
 
-        $this->add_action_buttons(false, get_string($changing ? 'claim:changesubmit' : 'claim:submit',
-            'local_qlogin_shomokh'));
+        $this->add_action_buttons(false, get_string(
+            $changing ? 'claim:changesubmit' : 'claim:submit',
+            'local_qlogin_shomokh'
+        ));
     }
 
     public function validation($data, $files): array {
@@ -69,8 +92,12 @@ final class link_existing_form extends \moodleform {
         if ((!$authenticated || $changing) && (string)($data['password'] ?? '') === '') {
             $errors['password'] = get_string('error:password', 'local_qlogin_shomokh');
         }
-        if (\local_qlogin_shomokh\manager::normalise_submitted_phone(
-                $data['phone'] ?? '', $data['phonecountrycode'] ?? '') === '') {
+        if (
+            \local_qlogin_shomokh\manager::normalise_submitted_phone(
+                $data['phone'] ?? '',
+                $data['phonecountrycode'] ?? ''
+            ) === ''
+        ) {
             $errors['phone'] = get_string('error:phone', 'local_qlogin_shomokh');
         }
         return $errors;

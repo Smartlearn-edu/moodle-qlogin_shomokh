@@ -1,5 +1,18 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** Transactional email service. @package local_qlogin_shomokh */
 namespace local_qlogin_shomokh\mail;
@@ -24,9 +37,14 @@ final class service {
         }
         $site = format_string(get_site()->fullname);
         $key = 'test-' . substr(hash('sha256', $userid . ':' . $recipient . ':' . microtime(true)), 0, 48);
-        return self::send(new message($userid, $recipient,
+        return self::send(new message(
+            $userid,
+            $recipient,
             get_string('health:testsubject', 'local_qlogin_shomokh', $site),
-            get_string('health:testbody', 'local_qlogin_shomokh'), 'test', $key));
+            get_string('health:testbody', 'local_qlogin_shomokh'),
+            'test',
+            $key
+        ));
     }
 
     /** Queues a bounded retry without putting a raw token in custom task data. */

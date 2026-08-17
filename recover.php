@@ -1,5 +1,18 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** Self-initiated WhatsApp password recovery. @package local_qlogin_shomokh */
 require_once('../../config.php');
@@ -31,8 +44,10 @@ $recoveryenabled = (bool)get_config('local_qlogin_shomokh', 'recoveryenabled');
 if ($recoveryenabled && $current && $current->state === 'verified' && $current->expiresat >= time()) {
     if ($data = $resetform->get_data()) {
         if (\local_qlogin_shomokh\recovery::reset_password($data->password)) {
-            redirect(new moodle_url('/local/qlogin_shomokh/index.php'),
-                get_string('recovery:passwordchanged', 'local_qlogin_shomokh'));
+            redirect(
+                new moodle_url('/local/qlogin_shomokh/index.php'),
+                get_string('recovery:passwordchanged', 'local_qlogin_shomokh')
+            );
         }
         \core\notification::error(get_string('recovery:expired', 'local_qlogin_shomokh'));
     }
@@ -95,15 +110,20 @@ if (!$recoveryenabled) {
 } else if ($current && $current->state === 'verified' && $current->expiresat >= time()) {
     echo $OUTPUT->notification(get_string('recovery:verified', 'local_qlogin_shomokh'), 'success');
     $resetform->display();
-} else if ($current && $current->state === 'pending' && $current->expiresat >= time()
-        && !empty($SESSION->local_qlogin_shomokh_recoverycode)) {
+} else if (
+    $current && $current->state === 'pending' && $current->expiresat >= time()
+        && !empty($SESSION->local_qlogin_shomokh_recoverycode)
+) {
     $code = $SESSION->local_qlogin_shomokh_recoverycode;
     echo html_writer::tag('p', get_string('recovery:sendmessage', 'local_qlogin_shomokh'));
     echo html_writer::tag('code', s('SHOMOKH RESET ' . $code), ['class' => 'local-qlogin-code']);
     $whatsappurl = \local_qlogin_shomokh\verification::whatsapp_url($code, 'RESET');
     if ($whatsappurl) {
-        echo html_writer::div(html_writer::link($whatsappurl, get_string('verify:openwhatsapp', 'local_qlogin_shomokh'),
-            ['class' => 'btn btn-success', 'target' => '_blank', 'rel' => 'noopener']), 'my-3');
+        echo html_writer::div(html_writer::link(
+            $whatsappurl,
+            get_string('verify:openwhatsapp', 'local_qlogin_shomokh'),
+            ['class' => 'btn btn-success', 'target' => '_blank', 'rel' => 'noopener']
+        ), 'my-3');
     } else {
         echo $OUTPUT->notification(get_string('verify:whatsappnotconfigured', 'local_qlogin_shomokh'), 'warning');
     }

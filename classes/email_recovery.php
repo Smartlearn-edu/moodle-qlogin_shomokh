@@ -1,5 +1,18 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** Independent email password recovery. @package local_qlogin_shomokh */
 namespace local_qlogin_shomokh;
@@ -26,8 +39,15 @@ final class email_recovery {
             return;
         }
         $emailsql = $DB->sql_equal('email', ':email', false);
-        $users = $DB->get_records_select('user', "$emailsql AND deleted = :deleted AND suspended = :suspended",
-            ['email' => $email, 'deleted' => 0, 'suspended' => 0], 'id ASC', '*', 0, 2);
+        $users = $DB->get_records_select(
+            'user',
+            "$emailsql AND deleted = :deleted AND suspended = :suspended",
+            ['email' => $email, 'deleted' => 0, 'suspended' => 0],
+            'id ASC',
+            '*',
+            0,
+            2
+        );
         if (count($users) !== 1) {
             return;
         }
@@ -36,8 +56,14 @@ final class email_recovery {
             return;
         }
         $targethash = \local_qlogin_shomokh\mail\config::hash_identifier($email);
-        $latestrecords = $DB->get_records('local_qlogin_shomokh_reset', ['targethash' => $targethash],
-            'timecreated DESC', '*', 0, 1);
+        $latestrecords = $DB->get_records(
+            'local_qlogin_shomokh_reset',
+            ['targethash' => $targethash],
+            'timecreated DESC',
+            '*',
+            0,
+            1
+        );
         $latest = reset($latestrecords);
         $cooldown = max(60, min(DAYSECS, (int)get_config('local_qlogin_shomokh', 'resendcooldown')));
         if ($latest && time() - (int)$latest->timecreated < $cooldown) {
@@ -57,8 +83,12 @@ final class email_recovery {
             'timemodified' => $now,
         ];
         $record->id = $DB->insert_record('local_qlogin_shomokh_reset', $record);
-        $token = \local_qlogin_shomokh\mail\config::derive_token('recovery', (int)$record->id,
-            (int)$user->id, $now);
+        $token = \local_qlogin_shomokh\mail\config::derive_token(
+            'recovery',
+            (int)$record->id,
+            (int)$user->id,
+            $now
+        );
         $record->tokenhash = manager::hash_token($token);
         $DB->update_record('local_qlogin_shomokh_reset', $record);
         $result = self::send_record($record, $user, $email, $token);
@@ -76,12 +106,20 @@ final class email_recovery {
             return;
         }
         $email = manager::normalise_email((string)$user->email);
-        if ($email === '' || !hash_equals($record->targethash,
-                \local_qlogin_shomokh\mail\config::hash_identifier($email))) {
+        if (
+            $email === '' || !hash_equals(
+                $record->targethash,
+                \local_qlogin_shomokh\mail\config::hash_identifier($email)
+            )
+        ) {
             return;
         }
-        $token = \local_qlogin_shomokh\mail\config::derive_token('recovery', (int)$record->id,
-            (int)$user->id, (int)$record->timecreated);
+        $token = \local_qlogin_shomokh\mail\config::derive_token(
+            'recovery',
+            (int)$record->id,
+            (int)$user->id,
+            (int)$record->timecreated
+        );
         if (!hash_equals($record->tokenhash, manager::hash_token($token))) {
             return;
         }
@@ -97,12 +135,15 @@ final class email_recovery {
         if (!self::available() || !preg_match('/^[a-f0-9]{64}$/i', $token)) {
             return false;
         }
-        return $DB->get_record_select('local_qlogin_shomokh_reset',
-            'tokenhash = :tokenhash AND state = :state AND expiresat >= :now', [
+        return $DB->get_record_select(
+            'local_qlogin_shomokh_reset',
+            'tokenhash = :tokenhash AND state = :state AND expiresat >= :now',
+            [
                 'tokenhash' => manager::hash_token($token),
                 'state' => 'pending',
                 'now' => time(),
-            ]);
+            ]
+        );
     }
 
     /** Changes the password once and invalidates existing sessions. */
@@ -125,8 +166,10 @@ final class email_recovery {
             $transaction = $DB->start_delegated_transaction();
             $record = $DB->get_record('local_qlogin_shomokh_reset', ['id' => $record->id], '*', MUST_EXIST);
             $user = $DB->get_record('user', ['id' => $record->userid, 'deleted' => 0, 'suspended' => 0]);
-            if (!$user || $record->state !== 'pending' || $record->expiresat < time() || !self::eligible_user($user)
-                    || !hash_equals($record->tokenhash, $tokenhash)) {
+            if (
+                !$user || $record->state !== 'pending' || $record->expiresat < time() || !self::eligible_user($user)
+                    || !hash_equals($record->tokenhash, $tokenhash)
+            ) {
                 $transaction->allow_commit();
                 return false;
             }
@@ -145,8 +188,12 @@ final class email_recovery {
     }
 
     /** Sends and increments the request attempt count. */
-    private static function send_record(\stdClass $record, \stdClass $user, string $email,
-            string $token): \local_qlogin_shomokh\mail\result {
+    private static function send_record(
+        \stdClass $record,
+        \stdClass $user,
+        string $email,
+        string $token
+    ): \local_qlogin_shomokh\mail\result {
         global $DB;
         $minutes = max(1, (int)ceil(((int)$record->expiresat - time()) / MINSECS));
         $url = new \moodle_url('/local/qlogin_shomokh/reset_email.php', ['token' => $token]);
@@ -172,8 +219,10 @@ final class email_recovery {
 
     /** Permits only configured internal authentication accounts. */
     private static function eligible_user(\stdClass $user): bool {
-        $types = array_filter(array_map('trim', explode(',',
-            (string)get_config('local_qlogin_shomokh', 'authtypes'))));
+        $types = array_filter(array_map('trim', explode(
+            ',',
+            (string)get_config('local_qlogin_shomokh', 'authtypes')
+        )));
         return in_array((string)$user->auth, $types ?: ['manual'], true);
     }
 }
