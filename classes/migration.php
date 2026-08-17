@@ -27,7 +27,7 @@ final class migration {
         }
         $types = array_filter(array_map('trim', explode(',',
             (string)get_config('local_qlogin_shomokh', 'authtypes'))));
-        return in_array((string)$user->auth, $types ?: ['manual'], true)
+        return in_array((string)$user->auth, $types ?: ['manual', 'email'], true)
             && self::phone_for_user($user) === '';
     }
 
@@ -209,13 +209,17 @@ final class migration {
         }
         $types = array_filter(array_map('trim', explode(',',
             (string)get_config('local_qlogin_shomokh', 'authtypes'))));
-        $types = $types ?: ['manual'];
+        $types = $types ?: ['manual', 'email'];
         [$authsql, $authparams] = $DB->get_in_or_equal($types, SQL_PARAMS_NAMED, 'migauth');
         $guestid = (int)guest_user()->id;
+        $namefieldnames = class_exists('\core_user\fields')
+            ? implode(', ', \core_user\fields::for_name()->get_required_fields())
+            : 'firstname, lastname, firstnamephonetic, lastnamephonetic, middlename, alternatename';
+        $userfields = "id, username, email, phone1, phone2, auth, suspended, {$namefieldnames}";
         $users = $DB->get_records_select('user',
             "deleted = :deleted AND id <> :guestid AND auth $authsql",
             ['deleted' => 0, 'guestid' => $guestid] + $authparams,
-            'id ASC', 'id, username, email, phone1, phone2, auth, suspended, firstname, lastname');
+            'id ASC', $userfields);
         foreach (array_keys($admins) as $adminid) {
             unset($users[$adminid]);
         }

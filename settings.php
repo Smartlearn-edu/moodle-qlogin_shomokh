@@ -59,7 +59,7 @@ if ($hassiteconfig) {
             get_string('resendcooldown_desc', 'local_qlogin_shomokh'), 600, PARAM_INT));
         $settings->add(new admin_setting_configtext('local_qlogin_shomokh/authtypes',
             get_string('authtypes', 'local_qlogin_shomokh'), get_string('authtypes_desc', 'local_qlogin_shomokh'),
-            'manual', PARAM_NOTAGS));
+            'manual, email', PARAM_NOTAGS));
         $settings->add(new admin_setting_configcheckbox('local_qlogin_shomokh/selfclaimenabled',
             get_string('selfclaimenabled', 'local_qlogin_shomokh'),
             get_string('selfclaimenabled_desc', 'local_qlogin_shomokh'), 1));

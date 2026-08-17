@@ -42,8 +42,10 @@ if ($data = $form->get_data()) {
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('manage:title', 'local_qlogin_shomokh'));
-echo $OUTPUT->heading(get_string('manage:queue', 'local_qlogin_shomokh'), 3);
-$sql = "SELECT v.id, v.userid, v.channel, v.target, v.state, v.expiresat, u.firstname, u.lastname
+$nameselects = class_exists('\core_user\fields')
+    ? \core_user\fields::for_name()->get_sql('u')->selects
+    : 'u.firstname, u.lastname, u.firstnamephonetic, u.lastnamephonetic, u.middlename, u.alternatename';
+$sql = "SELECT v.id, v.userid, v.channel, v.target, v.state, v.expiresat, {$nameselects}
           FROM {local_qlogin_shomokh_verify} v
           JOIN {user} u ON u.id = v.userid
          WHERE v.state IN (:pending, :expired)
