@@ -1,5 +1,18 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** Phone-first sign-in and registration page. @package local_qlogin_shomokh */
 require_once('../../config.php');
@@ -108,8 +121,10 @@ if ($data = $form->get_data()) {
             }
             $phonelock->release();
             $phonelock = null;
-            if (\local_qlogin_shomokh\verification::available()
-                    && in_array('email', \local_qlogin_shomokh\verification::required_channels(), true)) {
+            if (
+                \local_qlogin_shomokh\verification::available()
+                    && in_array('email', \local_qlogin_shomokh\verification::required_channels(), true)
+            ) {
                 try {
                     $emailrecord = \local_qlogin_shomokh\verification::issue_email($user, false);
                     \core\notification::success(get_string($emailrecord->mailstatus === 'sent'
@@ -120,8 +135,10 @@ if ($data = $form->get_data()) {
                 }
             }
             complete_user_login($user);
-            redirect(new moodle_url('/local/qlogin_shomokh/verify.php'),
-                get_string('accountcreated', 'local_qlogin_shomokh'));
+            redirect(
+                new moodle_url('/local/qlogin_shomokh/verify.php'),
+                get_string('accountcreated', 'local_qlogin_shomokh')
+            );
         } catch (moodle_exception $exception) {
             debugging($exception->getMessage(), DEBUG_DEVELOPER);
             $message = in_array($exception->errorcode, ['error:userexists', 'claim:busy'], true)

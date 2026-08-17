@@ -5,6 +5,14 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Moodle 4.4+ output hook callbacks.
@@ -33,16 +41,20 @@ final class output {
 
         // Existing bookmarks and the old plugin's links must lead to the one
         // unified centre. This runs before output, so Moodle can redirect safely.
-        if ($PAGE->url->get_path() === '/local/phoneverify/verify.php'
-                && \local_qlogin_shomokh\verification::available()) {
+        if (
+            $PAGE->url->get_path() === '/local/phoneverify/verify.php'
+                && \local_qlogin_shomokh\verification::available()
+        ) {
             redirect(new \moodle_url('/local/qlogin_shomokh/verify.php'));
         }
 
-        if (in_array($PAGE->url->get_path(), [
+        if (
+            in_array($PAGE->url->get_path(), [
             '/local/qlogin_shomokh/index.php',
             '/local/qlogin_shomokh/recover.php',
             '/local/qlogin_shomokh/link_existing.php',
-        ], true)) {
+            ], true)
+        ) {
             return;
         }
         $assetversion = (int)get_config('local_qlogin_shomokh', 'version');

@@ -388,6 +388,7 @@
 
 #qlogin-wrapper .iti {
     direction: ltr;
+    position: relative;
     width: 100%;
 }
 
@@ -414,17 +415,29 @@
     border: 1px solid #c8d3dc !important;
     border-radius: 6px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+    box-sizing: border-box;
     color: #17212b !important;
     direction: ltr;
     font-size: 0.9rem;
     left: 0;
     margin-top: 4px;
     max-height: 220px;
+    max-width: calc(100vw - 40px);
     overflow-y: auto;
+    right: auto;
     text-align: left;
     white-space: nowrap;
     width: min(340px, calc(100vw - 40px)) !important;
     z-index: 1050;
+}
+
+/* In RTL languages (e.g. Arabic), the flag button sits on the right side of the input.
+   Align the dropdown to the right edge so it extends inward over the card rather than
+   overflowing outside to the left. */
+[dir="rtl"] #qlogin-wrapper .iti__country-list,
+.dir-rtl #qlogin-wrapper .iti__country-list {
+    left: auto !important;
+    right: 0 !important;
 }
 
 #qlogin-wrapper .iti__country {

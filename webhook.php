@@ -1,5 +1,18 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** Authenticated Meta WhatsApp webhook. @package local_qlogin_shomokh */
 define('NO_MOODLE_COOKIES', true);
@@ -22,9 +35,11 @@ if ($method !== 'POST') {
     local_qlogin_shomokh_webhook_response(405, 'Method not allowed');
 }
 $dbman = $DB->get_manager();
-if (!$dbman->table_exists('local_qlogin_shomokh_event')
+if (
+    !$dbman->table_exists('local_qlogin_shomokh_event')
         || !$dbman->table_exists('local_qlogin_shomokh_verify')
-        || !$dbman->table_exists('local_qlogin_shomokh_recov')) {
+        || !$dbman->table_exists('local_qlogin_shomokh_recov')
+) {
     local_qlogin_shomokh_webhook_response(503, 'Service unavailable');
 }
 
@@ -54,8 +69,11 @@ foreach ((array)($payload->entry ?? []) as $entry) {
             foreach ((array)($value->messages ?? []) as $message) {
                 $messageid = substr(clean_param($message->id ?? '', PARAM_RAW_TRIMMED), 0, 255);
                 if ($messageid !== '') {
-                    \local_qlogin_shomokh\verification::record_event($messageid, 'configuration',
-                        ['status' => 'wrongphoneid', 'userid' => null]);
+                    \local_qlogin_shomokh\verification::record_event(
+                        $messageid,
+                        'configuration',
+                        ['status' => 'wrongphoneid', 'userid' => null]
+                    );
                 }
             }
             continue;
@@ -65,11 +83,16 @@ foreach ((array)($payload->entry ?? []) as $entry) {
             if ($messageid !== '' && $DB->record_exists('local_qlogin_shomokh_event', ['messageid' => $messageid])) {
                 continue;
             }
-            if ($messageid === '' || ($message->type ?? '') !== 'text'
-                    || empty($message->from) || empty($message->text->body)) {
+            if (
+                $messageid === '' || ($message->type ?? '') !== 'text'
+                    || empty($message->from) || empty($message->text->body)
+            ) {
                 if ($messageid !== '') {
-                    \local_qlogin_shomokh\verification::record_event($messageid, 'unsupported',
-                        ['status' => 'unsupportedmessage', 'userid' => null]);
+                    \local_qlogin_shomokh\verification::record_event(
+                        $messageid,
+                        'unsupported',
+                        ['status' => 'unsupportedmessage', 'userid' => null]
+                    );
                 }
                 continue;
             }

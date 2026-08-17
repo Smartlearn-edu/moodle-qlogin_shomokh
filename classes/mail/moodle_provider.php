@@ -1,5 +1,18 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** Moodle mail provider. @package local_qlogin_shomokh */
 namespace local_qlogin_shomokh\mail;
@@ -34,8 +47,14 @@ final class moodle_provider implements provider_interface {
                 ];
             }
             $accepted = email_to_user($user, \core_user::get_support_user(), $message->subject, $message->text);
-            return new result((bool)$accepted, !$accepted, $accepted ? 'accepted' : 'retry', 0, null,
-                $accepted ? '' : 'email_to_user_failed');
+            return new result(
+                (bool)$accepted,
+                !$accepted,
+                $accepted ? 'accepted' : 'retry',
+                0,
+                null,
+                $accepted ? '' : 'email_to_user_failed'
+            );
         } catch (\Throwable $exception) {
             return new result(false, true, 'retry', 0, null, get_class($exception));
         }

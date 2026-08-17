@@ -1,5 +1,18 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** Existing-account migration dry-run and safe alias linking. @package local_qlogin_shomokh */
 require_once('../../config.php');
@@ -20,8 +33,11 @@ if ($repairdata = $repairform->get_data()) {
             (int)$repairdata->repairuserid,
             (int)$USER->id
         );
-        redirect($url, get_string('migration:repairsuccess', 'local_qlogin_shomokh',
-            \local_qlogin_shomokh\manager::mask_phone($corrected)));
+        redirect($url, get_string(
+            'migration:repairsuccess',
+            'local_qlogin_shomokh',
+            \local_qlogin_shomokh\manager::mask_phone($corrected)
+        ));
     } catch (moodle_exception $exception) {
         \core\notification::error($exception->getMessage());
     } catch (Throwable $exception) {
@@ -62,14 +78,20 @@ if ($download === 'csv') {
 if ($action === 'linksafe') {
     require_sesskey();
     $linked = \local_qlogin_shomokh\migration::link_safe((int)$USER->id);
-    redirect($url, get_string($linked ? 'migration:linksuccess' : 'migration:nosafe',
-        'local_qlogin_shomokh', $linked));
+    redirect($url, get_string(
+        $linked ? 'migration:linksuccess' : 'migration:nosafe',
+        'local_qlogin_shomokh',
+        $linked
+    ));
 }
 if ($action === 'trustlegacy') {
     require_sesskey();
     $trusted = \local_qlogin_shomokh\migration::trust_legacy_emails();
-    redirect($url, get_string($trusted ? 'migration:trustsuccess' : 'migration:notrustneeded',
-        'local_qlogin_shomokh', $trusted));
+    redirect($url, get_string(
+        $trusted ? 'migration:trustsuccess' : 'migration:notrustneeded',
+        'local_qlogin_shomokh',
+        $trusted
+    ));
 }
 
 $scan = \local_qlogin_shomokh\migration::scan(200);
@@ -112,8 +134,10 @@ $table->head = [
 ];
 foreach ($scan['details'] as $record) {
     $table->data[] = [
-        html_writer::link(new moodle_url('/user/editadvanced.php', ['id' => $record->userid]),
-            (string)$record->userid),
+        html_writer::link(
+            new moodle_url('/user/editadvanced.php', ['id' => $record->userid]),
+            (string)$record->userid
+        ),
         s($record->fullname),
         get_string('migration:' . $record->category, 'local_qlogin_shomokh'),
         $record->phone === '' ? '-' : s(\local_qlogin_shomokh\manager::mask_phone($record->phone)),

@@ -5,6 +5,14 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Legacy output callbacks for Moodle 4.1 to 4.3.
@@ -27,16 +35,20 @@ if ((int)$CFG->version < 2024042200) {
         global $PAGE;
 
         // Route any old student verification link to the unified centre.
-        if ($PAGE->url->get_path() === '/local/phoneverify/verify.php'
-                && \local_qlogin_shomokh\verification::available()) {
+        if (
+            $PAGE->url->get_path() === '/local/phoneverify/verify.php'
+                && \local_qlogin_shomokh\verification::available()
+        ) {
             redirect(new moodle_url('/local/qlogin_shomokh/verify.php'));
         }
 
-        if (in_array($PAGE->url->get_path(), [
+        if (
+            in_array($PAGE->url->get_path(), [
             '/local/qlogin_shomokh/index.php',
             '/local/qlogin_shomokh/recover.php',
             '/local/qlogin_shomokh/link_existing.php',
-        ], true)) {
+            ], true)
+        ) {
             return;
         }
         $assetversion = (int)get_config('local_qlogin_shomokh', 'version');
@@ -74,9 +86,11 @@ function local_qlogin_shomokh_myprofile_navigation(
     $iscurrentuser,
     $course = null
 ) {
-    if (!$iscurrentuser || !isloggedin() || isguestuser() || empty($user->id)
+    if (
+        !$iscurrentuser || !isloggedin() || isguestuser() || empty($user->id)
             || is_siteadmin($user->id)
-            || has_capability('local/qlogin_shomokh:manage', context_system::instance())) {
+            || has_capability('local/qlogin_shomokh:manage', context_system::instance())
+    ) {
         return;
     }
 
@@ -134,8 +148,10 @@ function local_qlogin_shomokh_myprofile_navigation(
     ]);
     $content .= html_writer::link(
         new moodle_url('/local/qlogin_shomokh/verify.php'),
-        get_string($allcomplete ? 'profile:viewverification' : 'profile:completeverification',
-            'local_qlogin_shomokh'),
+        get_string(
+            $allcomplete ? 'profile:viewverification' : 'profile:completeverification',
+            'local_qlogin_shomokh'
+        ),
         ['class' => 'btn btn-primary local-qlogin-profile-verification__button']
     );
     $content .= ' ' . html_writer::link(

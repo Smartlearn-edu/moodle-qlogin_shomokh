@@ -1,12 +1,26 @@
 <?php
 // This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /** Post-install defaults. @package local_qlogin_shomokh */
 defined('MOODLE_INTERNAL') || die();
 
 /** Set explicit defaults for fresh installations. */
 function xmldb_local_qlogin_shomokh_install(): void {
-    foreach ([
+    foreach (
+        [
         'enabled' => 1,
         'defaultcountry' => 'sa',
         'requireemail' => 1,
@@ -29,7 +43,8 @@ function xmldb_local_qlogin_shomokh_install(): void {
         'emailrecoveryenabled' => 1,
         'maillogretentiondays' => 90,
         'legacydefaultcountrycode' => '966',
-    ] as $name => $value) {
+        ] as $name => $value
+    ) {
         set_config($name, $value, 'local_qlogin_shomokh');
     }
     set_config('tokensecret', bin2hex(random_bytes(32)), 'local_qlogin_shomokh');
