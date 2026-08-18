@@ -16,6 +16,10 @@
 
 namespace local_qlogin_shomokh\form;
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->libdir . '/formslib.php');
+
 /**
  * Recovery start form form.
  *
