@@ -560,7 +560,7 @@
    overflowing outside to the left, and layout country items in RTL. */
 [dir="rtl"] #qlogin-wrapper .iti__country-list,
 .dir-rtl #qlogin-wrapper .iti__country-list,
-body.dir-rtl .iti__country-list {
+body.dir-rtl #qlogin-wrapper .iti__country-list {
     direction: rtl !important;
     left: auto !important;
     right: 0 !important;
@@ -569,7 +569,7 @@ body.dir-rtl .iti__country-list {
 
 [dir="rtl"] #qlogin-wrapper .iti__country,
 .dir-rtl #qlogin-wrapper .iti__country,
-body.dir-rtl .iti__country {
+body.dir-rtl #qlogin-wrapper .iti__country {
     direction: rtl !important;
     text-align: right !important;
 }

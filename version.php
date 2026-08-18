@@ -28,4 +28,4 @@ $plugin->component = 'local_qlogin_shomokh';
 $plugin->version = 2026081810;
 $plugin->requires = 2022112800;
 $plugin->maturity = MATURITY_BETA;
-$plugin->release = '0.6.9';
+$plugin->release = '0.7.0';

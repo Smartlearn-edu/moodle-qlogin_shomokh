@@ -161,6 +161,7 @@ final class manager {
         foreach ($countries as $iso => $name) {
             $localized[strtolower($iso)] = $name;
         }
-        return json_encode($localized, JSON_UNESCAPED_UNICODE);
+        $json = json_encode($localized, JSON_UNESCAPED_UNICODE);
+        return $json !== false ? $json : '{}';
     }
 }
