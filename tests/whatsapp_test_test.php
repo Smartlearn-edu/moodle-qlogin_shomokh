@@ -14,11 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Whatsapp test test functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Unit tests for the administrator-only WhatsApp integration challenge. */
+/**
+ * Unit tests for the administrator-only WhatsApp integration challenge.
+ */
 final class whatsapp_test_test extends \advanced_testcase {
     public function test_valid_challenge_passes_once_without_storing_raw_code(): void {
         global $SESSION;

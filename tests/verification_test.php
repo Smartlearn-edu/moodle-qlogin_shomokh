@@ -14,11 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Verification test functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Unit tests for channel-specific verification helpers. */
+/**
+ * Unit tests for channel-specific verification helpers.
+ */
 final class verification_test extends \advanced_testcase {
     public function test_default_auth_policy_includes_manual_and_email(): void {
         $this->resetAfterTest();

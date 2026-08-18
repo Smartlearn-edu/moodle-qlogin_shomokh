@@ -14,7 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Authenticated Meta WhatsApp webhook. @package local_qlogin_shomokh */
+/**
+ * Webhook functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 define('NO_MOODLE_COOKIES', true);
 // A webhook response must never contain developer notices or stack traces.
 define('NO_DEBUG_DISPLAY', true);
@@ -113,7 +120,9 @@ foreach ((array)($payload->entry ?? []) as $entry) {
 }
 local_qlogin_shomokh_webhook_response(200, 'OK');
 
-/** Sends a minimal webhook response. */
+/**
+ * Sends a minimal webhook response.
+ */
 function local_qlogin_shomokh_webhook_response(int $status, string $message): void {
     http_response_code($status);
     header('Content-Type: text/plain; charset=utf-8');

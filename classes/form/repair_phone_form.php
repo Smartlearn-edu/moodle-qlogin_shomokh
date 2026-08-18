@@ -16,11 +16,17 @@
 
 namespace local_qlogin_shomokh\form;
 
-defined('MOODLE_INTERNAL') || die();
-require_once($CFG->libdir . '/formslib.php');
-
-/** Admin form for deterministic repair of one duplicated country-code phone. */
+/**
+ * Repair phone form form.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 final class repair_phone_form extends \moodleform {
+    /**
+     * Form definition.
+     */
     protected function definition(): void {
         $mform = $this->_form;
         $mform->addElement(

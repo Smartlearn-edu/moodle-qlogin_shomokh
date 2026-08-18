@@ -14,28 +14,57 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Unified verification service. @package local_qlogin_shomokh */
+/**
+ * Verification functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Coordinates email and WhatsApp verification using one state model. */
+/**
+ * Coordinates email and WhatsApp verification using one state model.
+ */
 final class verification {
+    /**
+     * Constant email.
+     */
     public const EMAIL = 'email';
+    /**
+     * Constant phone.
+     */
     public const PHONE = 'phone';
+    /**
+     * Constant pending.
+     */
     public const PENDING = 'pending';
+    /**
+     * Constant verified.
+     */
     public const VERIFIED = 'verified';
+    /**
+     * Constant expired.
+     */
     public const EXPIRED = 'expired';
+    /**
+     * Constant waived.
+     */
     public const WAIVED = 'waived';
 
-    /** Whether the plugin and its upgraded schema are ready. */
+    /**
+     * Whether the plugin and its upgraded schema are ready.
+     */
     public static function available(): bool {
         global $DB;
         return (bool)get_config('local_qlogin_shomokh', 'enabled')
             && $DB->get_manager()->table_exists('local_qlogin_shomokh_verify');
     }
 
-    /** Configured verification channels. */
+    /**
+     * Configured verification channels.
+     */
     public static function required_channels(): array {
         $channels = [];
         if ((bool)get_config('local_qlogin_shomokh', 'requireemail')) {
@@ -47,7 +76,9 @@ final class verification {
         return $channels;
     }
 
-    /** Whether a Moodle account belongs to this flow. */
+    /**
+     * Whether a Moodle account belongs to this flow.
+     */
     public static function eligible(\stdClass $user): bool {
         global $DB;
         if (!self::available() || empty($user->id) || is_siteadmin($user->id) || !empty($user->deleted)) {
@@ -61,7 +92,9 @@ final class verification {
                 ]));
     }
 
-    /** Creates or synchronises all required channel records. */
+    /**
+     * Creates or synchronises all required channel records.
+     */
     public static function ensure_for_user(\stdClass $user): array {
         $records = [];
         if (!self::eligible($user)) {
@@ -73,7 +106,9 @@ final class verification {
         return $records;
     }
 
-    /** Creates or synchronises one channel record. */
+    /**
+     * Creates or synchronises one channel record.
+     */
     public static function ensure_channel(\stdClass $user, string $channel): \stdClass {
         global $DB;
         if (!in_array($channel, [self::EMAIL, self::PHONE], true)) {
@@ -183,7 +218,9 @@ final class verification {
         }
     }
 
-    /** Tracks a newly created account without trusting either contact channel. */
+    /**
+     * Tracks a newly created account without trusting either contact channel.
+     */
     public static function track_new_user(\stdClass $user): array {
         if (
             !self::available() || empty($user->id) || is_siteadmin($user->id)
@@ -201,7 +238,9 @@ final class verification {
         return $records;
     }
 
-    /** Explicitly trusts one legacy email during an administrator-reviewed migration. */
+    /**
+     * Explicitly trusts one legacy email during an administrator-reviewed migration.
+     */
     public static function trust_legacy_email(\stdClass $user): bool {
         if (!self::available() || manager::normalise_email((string)$user->email) === '') {
             return false;
@@ -214,25 +253,33 @@ final class verification {
         return true;
     }
 
-    /** Gets one user's channel record. */
+    /**
+     * Gets one user's channel record.
+     */
     public static function get(int $userid, string $channel) {
         global $DB;
         return $DB->get_record('local_qlogin_shomokh_verify', ['userid' => $userid, 'channel' => $channel]);
     }
 
-    /** Whether a channel is satisfied by verification or an explicit exemption. */
+    /**
+     * Whether a channel is satisfied by verification or an explicit exemption.
+     */
     public static function channel_complete(int $userid, string $channel): bool {
         $record = self::get($userid, $channel);
         return $record ? self::record_complete($record) : self::is_exempt($userid, $channel);
     }
 
-    /** Whether a loaded record is complete, avoiding a duplicate database lookup. */
+    /**
+     * Whether a loaded record is complete, avoiding a duplicate database lookup.
+     */
     public static function record_complete(\stdClass $record): bool {
         return in_array($record->state, [self::VERIFIED, self::WAIVED], true)
             || self::is_exempt((int)$record->userid, (string)$record->channel);
     }
 
-    /** Whether all currently required channels are complete. */
+    /**
+     * Whether all currently required channels are complete.
+     */
     public static function all_complete(int $userid): bool {
         global $DB;
         $user = $DB->get_record('user', ['id' => $userid, 'deleted' => 0]);
@@ -247,7 +294,9 @@ final class verification {
         return true;
     }
 
-    /** Whether this user is currently past the deadline for any required channel. */
+    /**
+     * Whether this user is currently past the deadline for any required channel.
+     */
     public static function requires_enforcement(int $userid): bool {
         global $DB;
         $user = $DB->get_record('user', ['id' => $userid, 'deleted' => 0]);
@@ -266,7 +315,9 @@ final class verification {
         return false;
     }
 
-    /** Sends a fresh email verification link immediately and queues only transient failures. */
+    /**
+     * Sends a fresh email verification link immediately and queues only transient failures.
+     */
     public static function issue_email(\stdClass $user, bool $cooldown = true): \stdClass {
         global $DB;
         $record = self::ensure_channel($user, self::EMAIL);
@@ -303,7 +354,9 @@ final class verification {
         return $record;
     }
 
-    /** Retries the current verification link without exposing its raw token in task data. */
+    /**
+     * Retries the current verification link without exposing its raw token in task data.
+     */
     public static function retry_email(int $recordid, int $attempt): void {
         global $DB;
         $record = $DB->get_record('local_qlogin_shomokh_verify', [
@@ -331,8 +384,14 @@ final class verification {
         }
     }
 
-    /** Builds and sends one verification message through the selected provider. */
-    private static function send_email_record(\stdClass $record, \stdClass $user, string $token): \local_qlogin_shomokh\mail\result {
+    /**
+     * Builds and sends one verification message through the selected provider.
+     */
+    private static function send_email_record(
+        \stdClass $record,
+        \stdClass $user,
+        string $token
+    ): \local_qlogin_shomokh\mail\result {
         $url = new \moodle_url('/local/qlogin_shomokh/verify_email.php', ['u' => $user->id, 'token' => $token]);
         $values = [
             'name' => fullname($user),
@@ -351,7 +410,9 @@ final class verification {
         ));
     }
 
-    /** Confirms an email link. */
+    /**
+     * Confirms an email link.
+     */
     public static function verify_email(int $userid, string $token): bool {
         global $DB;
         $record = self::get($userid, self::EMAIL);
@@ -366,7 +427,9 @@ final class verification {
         return true;
     }
 
-    /** Issues a WhatsApp code and returns it for the current browser session. */
+    /**
+     * Issues a WhatsApp code and returns it for the current browser session.
+     */
     public static function issue_phone(\stdClass $user, bool $cooldown = true): array {
         global $DB, $SESSION;
         $record = self::ensure_channel($user, self::PHONE);
@@ -390,7 +453,9 @@ final class verification {
         return [$record, $code];
     }
 
-    /** Returns an existing in-session code or issues a new one. */
+    /**
+     * Returns an existing in-session code or issues a new one.
+     */
     public static function phone_code(\stdClass $user): array {
         global $SESSION;
         $record = self::ensure_channel($user, self::PHONE);
@@ -404,7 +469,9 @@ final class verification {
         return [$record, ''];
     }
 
-    /** Builds the wa.me URL for a phone code. */
+    /**
+     * Builds the wa.me URL for a phone code.
+     */
     public static function whatsapp_url(string $code, string $purpose = 'VERIFY'): ?string {
         $number = manager::normalise_phone((string)get_config('local_qlogin_shomokh', 'businessnumber'));
         if ($number === '') {
@@ -414,7 +481,9 @@ final class verification {
         return 'https://wa.me/' . $number . '?text=' . rawurlencode($message);
     }
 
-    /** Verifies an authenticated inbound WhatsApp message. */
+    /**
+     * Verifies an authenticated inbound WhatsApp message.
+     */
     public static function verify_from_whatsapp(string $fromphone, string $message): array {
         global $DB;
         if (!self::available()) {
@@ -470,7 +539,9 @@ final class verification {
         ];
     }
 
-    /** Deduplicates and stores a minimal webhook result. */
+    /**
+     * Deduplicates and stores a minimal webhook result.
+     */
     public static function record_event(string $messageid, string $eventtype, array $result): bool {
         global $DB;
         $messageid = substr(clean_param($messageid, PARAM_RAW_TRIMMED), 0, 255);
@@ -489,7 +560,9 @@ final class verification {
         }
     }
 
-    /** Whether an exemption applies directly or through cohort membership. */
+    /**
+     * Whether an exemption applies directly or through cohort membership.
+     */
     public static function is_exempt(int $userid, string $channel): bool {
         global $DB;
         [$channelsql, $channelparams] = $DB->get_in_or_equal([$channel, 'all'], SQL_PARAMS_NAMED, 'exchannel');
@@ -513,7 +586,9 @@ final class verification {
         );
     }
 
-    /** Adds or updates an exemption. */
+    /**
+     * Adds or updates an exemption.
+     */
     public static function set_exemption(string $scope, int $scopeid, string $channel, string $reason, int $createdby): void {
         global $DB;
         if (!in_array($scope, ['user', 'cohort'], true) || !in_array($channel, ['all', self::EMAIL, self::PHONE], true)) {
@@ -532,13 +607,17 @@ final class verification {
         }
     }
 
-    /** Removes one exemption. */
+    /**
+     * Removes one exemption.
+     */
     public static function delete_exemption(int $id): void {
         global $DB;
         $DB->delete_records('local_qlogin_shomokh_exempt', ['id' => $id]);
     }
 
-    /** Marks pending records expired and returns affected user IDs. */
+    /**
+     * Marks pending records expired and returns affected user IDs.
+     */
     public static function expire_due(): array {
         global $DB;
         $now = time();
@@ -574,7 +653,9 @@ final class verification {
         return array_keys($users);
     }
 
-    /** Sends a reminder when its interval and configured maximum allow it. */
+    /**
+     * Sends a reminder when its interval and configured maximum allow it.
+     */
     public static function remind(\stdClass $record): bool {
         global $DB;
         $max = max(0, min(50, (int)get_config('local_qlogin_shomokh', 'maxreminders')));
@@ -600,7 +681,9 @@ final class verification {
         return true;
     }
 
-    /** Retries a reminder using the same idempotency key until it is accepted. */
+    /**
+     * Retries a reminder using the same idempotency key until it is accepted.
+     */
     public static function retry_reminder(int $recordid, int $attempt): void {
         global $DB;
         $record = $DB->get_record('local_qlogin_shomokh_verify', ['id' => $recordid]);
@@ -619,7 +702,9 @@ final class verification {
         }
     }
 
-    /** Builds one non-sensitive reminder email. */
+    /**
+     * Builds one non-sensitive reminder email.
+     */
     private static function send_reminder(\stdClass $record, \stdClass $user): \local_qlogin_shomokh\mail\result {
         $url = new \moodle_url('/local/qlogin_shomokh/verify.php');
         $body = get_string('reminder:body', 'local_qlogin_shomokh', [
@@ -637,14 +722,18 @@ final class verification {
         ));
     }
 
-    /** Configured grace period in seconds; default 30 days. */
+    /**
+     * Configured grace period in seconds; default 30 days.
+     */
     public static function grace_seconds(): int {
         $configured = get_config('local_qlogin_shomokh', 'graceperioddays');
         $days = $configured === false ? 30 : (int)$configured;
         return max(1, min(365, $days)) * DAYSECS;
     }
 
-    /** Sets a record verified. */
+    /**
+     * Sets a record verified.
+     */
     private static function mark_verified(\stdClass $record): void {
         global $DB;
         $record->state = self::VERIFIED;
@@ -657,7 +746,9 @@ final class verification {
         }
     }
 
-    /** Seconds remaining before this channel can send again. */
+    /**
+     * Seconds remaining before this channel can send again.
+     */
     public static function cooldown_remaining(\stdClass $record): int {
         $seconds = max(0, min(DAYSECS, (int)get_config('local_qlogin_shomokh', 'resendcooldown')));
         if (empty($record->lastsentat)) {
@@ -666,7 +757,9 @@ final class verification {
         return max(0, $seconds - (time() - (int)$record->lastsentat));
     }
 
-    /** Enforces a configurable resend interval for this record and channel only. */
+    /**
+     * Enforces a configurable resend interval for this record and channel only.
+     */
     private static function check_cooldown(\stdClass $record, bool $enforce): void {
         if (!$enforce) {
             return;

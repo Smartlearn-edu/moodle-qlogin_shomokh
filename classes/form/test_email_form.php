@@ -16,11 +16,17 @@
 
 namespace local_qlogin_shomokh\form;
 
-defined('MOODLE_INTERNAL') || die();
-require_once($CFG->libdir . '/formslib.php');
-
-/** Administrator-only transactional email test form. */
+/**
+ * Test email form form.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 final class test_email_form extends \moodleform {
+    /**
+     * Form definition.
+     */
     protected function definition(): void {
         $mform = $this->_form;
         $mform->addElement('text', 'recipient', get_string('health:testrecipient', 'local_qlogin_shomokh'), [
@@ -34,6 +40,13 @@ final class test_email_form extends \moodleform {
         $this->add_action_buttons(false, get_string('health:testsend', 'local_qlogin_shomokh'));
     }
 
+    /**
+     * Validate form data.
+     *
+     * @param array $data Submitted data.
+     * @param array $files Uploaded files.
+     * @return array Errors array.
+     */
     public function validation($data, $files): array {
         $errors = parent::validation($data, $files);
         if (\local_qlogin_shomokh\manager::normalise_email($data['recipient'] ?? '') === '') {

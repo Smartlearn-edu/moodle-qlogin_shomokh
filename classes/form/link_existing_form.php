@@ -16,11 +16,17 @@
 
 namespace local_qlogin_shomokh\form;
 
-defined('MOODLE_INTERNAL') || die();
-require_once($CFG->libdir . '/formslib.php');
-
-/** Form for attaching a mobile sign-in alias to an existing Moodle account. */
+/**
+ * Link existing form form.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 final class link_existing_form extends \moodleform {
+    /**
+     * Form definition.
+     */
     protected function definition(): void {
         $mform = $this->_form;
         $authenticated = !empty($this->_customdata['authenticated']);
@@ -82,6 +88,13 @@ final class link_existing_form extends \moodleform {
         ));
     }
 
+    /**
+     * Validate form data.
+     *
+     * @param array $data Submitted data.
+     * @param array $files Uploaded files.
+     * @return array Errors array.
+     */
     public function validation($data, $files): array {
         $errors = parent::validation($data, $files);
         $authenticated = !empty($this->_customdata['authenticated']);

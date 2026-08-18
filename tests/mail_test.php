@@ -14,11 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Mail test functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Tests deterministic link tokens and signed Resend webhook validation. */
+/**
+ * Tests deterministic link tokens and signed Resend webhook validation.
+ */
 final class mail_test extends \advanced_testcase {
     public function test_retry_token_is_stable_and_purpose_specific(): void {
         $this->resetAfterTest();

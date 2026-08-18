@@ -16,11 +16,17 @@
 
 namespace local_qlogin_shomokh\form;
 
-defined('MOODLE_INTERNAL') || die();
-require_once($CFG->libdir . '/formslib.php');
-
-/** Sets a new password after a valid email recovery link. */
+/**
+ * Email reset form form.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 final class email_reset_form extends \moodleform {
+    /**
+     * Form definition.
+     */
     protected function definition(): void {
         $mform = $this->_form;
         $token = (string)($this->_customdata['token'] ?? '');
@@ -40,6 +46,13 @@ final class email_reset_form extends \moodleform {
         $this->add_action_buttons(false, get_string('recovery:savepassword', 'local_qlogin_shomokh'));
     }
 
+    /**
+     * Validate form data.
+     *
+     * @param array $data Submitted data.
+     * @param array $files Uploaded files.
+     * @return array Errors array.
+     */
     public function validation($data, $files): array {
         $errors = parent::validation($data, $files);
         if (!preg_match('/^[a-f0-9]{64}$/i', (string)($data['token'] ?? ''))) {

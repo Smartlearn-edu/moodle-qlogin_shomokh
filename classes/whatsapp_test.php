@@ -14,17 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Administrator-initiated end-to-end WhatsApp integration test. @package local_qlogin_shomokh */
+/**
+ * Whatsapp test functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Keeps a short-lived test challenge separate from student verification records. */
+/**
+ * Keeps a short-lived test challenge separate from student verification records.
+ */
 final class whatsapp_test {
-    /** Ten minutes is enough to move between Moodle and WhatsApp. */
+    /**
+     * Ten minutes is enough to move between Moodle and WhatsApp.
+     */
     private const LIFETIME = 600;
 
-    /** Creates or returns the current administrator's short-lived test code. */
+    /**
+     * Creates or returns the current administrator's short-lived test code.
+     */
     public static function issue(int $userid): string {
         global $SESSION;
 
@@ -44,7 +55,9 @@ final class whatsapp_test {
         return $code;
     }
 
-    /** Returns the raw code only to the same authenticated session that issued it. */
+    /**
+     * Returns the raw code only to the same authenticated session that issued it.
+     */
     public static function active_code(int $userid): string {
         global $SESSION;
 
@@ -64,12 +77,16 @@ final class whatsapp_test {
         return $code;
     }
 
-    /** Builds the current site's WhatsApp deep-link without exposing any Meta secret. */
+    /**
+     * Builds the current site's WhatsApp deep-link without exposing any Meta secret.
+     */
     public static function url(string $code): ?string {
         return verification::whatsapp_url($code, 'TEST');
     }
 
-    /** Validates a signed inbound test message after webhook-level checks pass. */
+    /**
+     * Validates a signed inbound test message after webhook-level checks pass.
+     */
     public static function verify(string $fromphone, string $message): array {
         $phone = manager::normalise_phone($fromphone);
         if ($phone === '') {

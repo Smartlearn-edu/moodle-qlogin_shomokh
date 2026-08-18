@@ -14,23 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/**
- * Moodle 4.4+ output hook callbacks.
- *
- * @package   local_qlogin_shomokh
- * @copyright 2026 Shomokh Al-Elm
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace local_qlogin_shomokh\hook;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Injects the small reminder stylesheet and non-blocking banner.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class output {
     /**
+     * Callback before standard head HTML generation.
+     *
      * @param \core\hook\output\before_standard_head_html_generation $hook Output hook.
      * @return void
      */

@@ -14,14 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Existing-account authentication for self-service phone linking. @package local_qlogin_shomokh */
+/**
+ * Account link functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Resolves an unambiguous legacy account and verifies its current password. */
+/**
+ * Resolves an unambiguous legacy account and verifies its current password.
+ */
 final class account_link {
-    /** Resolves a phone, unique email or exact username to Moodle's username. */
+    /**
+     * Resolves a phone, unique email or exact username to Moodle's username.
+     */
     public static function resolve_username(string $identifier): ?string {
         global $DB;
 
@@ -64,7 +73,9 @@ final class account_link {
         return $user ? (string)$user->username : null;
     }
 
-    /** Whether an email cannot be used for login because it belongs to multiple accounts. */
+    /**
+     * Whether an email cannot be used for login because it belongs to multiple accounts.
+     */
     public static function email_is_ambiguous(string $identifier): bool {
         global $DB;
         $email = manager::normalise_email($identifier);
@@ -82,7 +93,9 @@ final class account_link {
         ]) > 1;
     }
 
-    /** Returns the authenticated account, or null without exposing which check failed. */
+    /**
+     * Returns the authenticated account, or null without exposing which check failed.
+     */
     public static function authenticate(string $identifier, string $password): ?\stdClass {
         $identifier = trim($identifier);
         if ($identifier === '' || $password === '') {
@@ -104,7 +117,9 @@ final class account_link {
         return $user;
     }
 
-    /** Rechecks the current password before changing a sign-in phone. */
+    /**
+     * Rechecks the current password before changing a sign-in phone.
+     */
     public static function reauthenticate(\stdClass $user, string $password): bool {
         if ($password === '' || empty($user->username)) {
             return false;

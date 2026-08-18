@@ -14,20 +14,31 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Secret and provider configuration. @package local_qlogin_shomokh */
+/**
+ * Config functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh\mail;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Resolves external secrets before database-backed settings. */
+/**
+ * Resolves external secrets before database-backed settings.
+ */
 final class config {
-    /** Returns the selected provider. */
+    /**
+     * Returns the selected provider.
+     */
     public static function provider(): string {
         $provider = (string)get_config('local_qlogin_shomokh', 'mailprovider');
         return in_array($provider, ['resend', 'moodle'], true) ? $provider : 'resend';
     }
 
-    /** Returns [API key, source]. */
+    /**
+     * Returns [API key, source].
+     */
     public static function resend_api_key(): array {
         global $CFG;
         if (!empty($CFG->local_qlogin_shomokh_resendapikey)) {
@@ -41,7 +52,9 @@ final class config {
         return [$database, $database === '' ? 'missing' : 'database'];
     }
 
-    /** Returns [webhook secret, source]. */
+    /**
+     * Returns [webhook secret, source].
+     */
     public static function resend_webhook_secret(): array {
         global $CFG;
         if (!empty($CFG->local_qlogin_shomokh_resendwebhooksecret)) {
@@ -55,7 +68,9 @@ final class config {
         return [$database, $database === '' ? 'missing' : 'database'];
     }
 
-    /** Secret used to derive retryable one-time links without storing raw tokens in task data. */
+    /**
+     * Secret used to derive retryable one-time links without storing raw tokens in task data.
+     */
     public static function token_secret(): string {
         global $CFG;
         if (!empty($CFG->local_qlogin_shomokh_tokensecret)) {
@@ -73,18 +88,24 @@ final class config {
         return $secret;
     }
 
-    /** Derives a stable unguessable token for one entity generation. */
+    /**
+     * Derives a stable unguessable token for one entity generation.
+     */
     public static function derive_token(string $purpose, int $entityid, int $userid, int $generation): string {
         $payload = $purpose . ':' . $entityid . ':' . $userid . ':' . $generation;
         return hash_hmac('sha256', $payload, self::token_secret());
     }
 
-    /** Produces a non-reversible, installation-specific identifier for logs and throttling. */
+    /**
+     * Produces a non-reversible, installation-specific identifier for logs and throttling.
+     */
     public static function hash_identifier(string $value): string {
         return hash_hmac('sha256', 'identifier:' . \core_text::strtolower(trim($value)), self::token_secret());
     }
 
-    /** Whether Resend has enough information for sending. */
+    /**
+     * Whether Resend has enough information for sending.
+     */
     public static function resend_ready(): bool {
         [$key] = self::resend_api_key();
         return $key !== '' && \local_qlogin_shomokh\manager::normalise_email(

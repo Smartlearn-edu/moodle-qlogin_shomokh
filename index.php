@@ -14,7 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Phone-first sign-in and registration page. @package local_qlogin_shomokh */
+/**
+ * Main login and registration gateway.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+// phpcs:disable moodle.Files.RequireLogin.Missing
 require_once('../../config.php');
 require_once($CFG->dirroot . '/user/lib.php');
 require_once($CFG->libdir . '/authlib.php');
@@ -167,56 +175,88 @@ $initialtitle = get_string($registering ? 'registertitle' : 'logintitle', 'local
 $initialsubtitle = $registering
     ? get_string('registersubtitle', 'local_qlogin_shomokh', $gracedays)
     : get_string('loginsubtitle', 'local_qlogin_shomokh');
+
 echo $OUTPUT->header();
-?>
-<div id="qlogin-wrapper" class="notranslate" translate="no"
-    data-mode="<?php echo $registering ? 'register' : 'login'; ?>"
-    data-default-country="<?php echo s($defaultcountry); ?>"
-    data-login-title="<?php echo s(get_string('logintitle', 'local_qlogin_shomokh')); ?>"
-    data-login-subtitle="<?php echo s(get_string('loginsubtitle', 'local_qlogin_shomokh')); ?>"
-    data-login-button="<?php echo s(get_string('submit_login', 'local_qlogin_shomokh')); ?>"
-    data-register-title="<?php echo s(get_string('registertitle', 'local_qlogin_shomokh')); ?>"
-    data-register-subtitle="<?php echo s(get_string('registersubtitle', 'local_qlogin_shomokh', $gracedays)); ?>"
-    data-register-button="<?php echo s(get_string('submit_register', 'local_qlogin_shomokh')); ?>"
-    data-show-password="<?php echo s(get_string('showpassword', 'local_qlogin_shomokh')); ?>"
-    data-hide-password="<?php echo s(get_string('hidepassword', 'local_qlogin_shomokh')); ?>"
-    data-localized-countries="<?php echo s(\local_qlogin_shomokh\manager::localized_countries_json()); ?>">
-    <div class="qlogin-card">
-        <div class="qlogin-logo">
-            <?php if ($logourl) : ?>
-                <img src="<?php echo s($logourl); ?>" alt="<?php echo s($sitename); ?>">
-            <?php else : ?>
-                <div class="site-name"><?php echo s($sitename); ?></div>
-            <?php endif; ?>
-        </div>
-        <div class="auth-tabs" role="tablist"
-            aria-label="<?php echo s(get_string('authenticationtabs', 'local_qlogin_shomokh')); ?>">
-            <a class="tab-btn<?php echo $registering ? '' : ' active'; ?>" id="btn-login" role="tab"
-                href="<?php echo s((new moodle_url($url, ['action' => 'login']))->out(false)); ?>"
-                aria-selected="<?php echo $registering ? 'false' : 'true'; ?>">
-                <?php echo s(get_string('login', 'local_qlogin_shomokh')); ?>
-            </a>
-            <a class="tab-btn<?php echo $registering ? ' active' : ''; ?>" id="btn-register" role="tab"
-                href="<?php echo s((new moodle_url($url, ['action' => 'register']))->out(false)); ?>"
-                aria-selected="<?php echo $registering ? 'true' : 'false'; ?>">
-                <?php echo s(get_string('register', 'local_qlogin_shomokh')); ?>
-            </a>
-        </div>
-        <h2 class="form-title" id="form-title"><?php echo s($initialtitle); ?></h2>
-        <p class="form-subtitle" id="form-subtitle"><?php echo s($initialsubtitle); ?></p>
-        <?php $form->display(); ?>
-        <div id="forgot-password-link" class="forgot-password-link<?php echo $registering ? ' d-none' : ''; ?>">
-            <a href="<?php echo s((new moodle_url('/local/qlogin_shomokh/recover.php'))->out(false)); ?>">
-                <?php echo s(get_string('forgotpassword', 'local_qlogin_shomokh')); ?>
-            </a>
-        </div>
-        <?php if (\local_qlogin_shomokh\migration::self_claim_available()) : ?>
-            <div class="existing-account-link">
-                <a href="<?php echo s((new moodle_url('/local/qlogin_shomokh/link_existing.php'))->out(false)); ?>">
-                    <?php echo s(get_string('claim:entrylink', 'local_qlogin_shomokh')); ?>
-                </a>
-            </div>
-        <?php endif; ?>
-    </div>
-</div>
-<?php echo $OUTPUT->footer();
+
+$logocontent = '';
+if ($logourl) {
+    $logocontent = html_writer::empty_tag('img', ['src' => $logourl, 'alt' => $sitename]);
+} else {
+    $logocontent = html_writer::tag('div', s($sitename), ['class' => 'site-name']);
+}
+
+$loginurl = (new moodle_url($url, ['action' => 'login']))->out(false);
+$registerurl = (new moodle_url($url, ['action' => 'register']))->out(false);
+
+$loginactive = $registering ? '' : ' active';
+$registeractive = $registering ? ' active' : '';
+
+$tabshtml = html_writer::start_div('auth-tabs', [
+    'role' => 'tablist',
+    'aria-label' => get_string('authenticationtabs', 'local_qlogin_shomokh'),
+]);
+$tabshtml .= html_writer::link(
+    $loginurl,
+    get_string('login', 'local_qlogin_shomokh'),
+    [
+        'class' => 'tab-btn' . $loginactive,
+        'id' => 'btn-login',
+        'role' => 'tab',
+        'aria-selected' => $registering ? 'false' : 'true',
+    ]
+);
+$tabshtml .= html_writer::link(
+    $registerurl,
+    get_string('register', 'local_qlogin_shomokh'),
+    [
+        'class' => 'tab-btn' . $registeractive,
+        'id' => 'btn-register',
+        'role' => 'tab',
+        'aria-selected' => $registering ? 'true' : 'false',
+    ]
+);
+$tabshtml .= html_writer::end_div();
+
+$wrapperattrs = [
+    'id' => 'qlogin-wrapper',
+    'class' => 'notranslate',
+    'translate' => 'no',
+    'data-mode' => $registering ? 'register' : 'login',
+    'data-default-country' => $defaultcountry,
+    'data-login-title' => get_string('logintitle', 'local_qlogin_shomokh'),
+    'data-login-subtitle' => get_string('loginsubtitle', 'local_qlogin_shomokh'),
+    'data-login-button' => get_string('submit_login', 'local_qlogin_shomokh'),
+    'data-register-title' => get_string('registertitle', 'local_qlogin_shomokh'),
+    'data-register-subtitle' => get_string('registersubtitle', 'local_qlogin_shomokh', $gracedays),
+    'data-register-button' => get_string('submit_register', 'local_qlogin_shomokh'),
+    'data-show-password' => get_string('showpassword', 'local_qlogin_shomokh'),
+    'data-hide-password' => get_string('hidepassword', 'local_qlogin_shomokh'),
+    'data-localized-countries' => \local_qlogin_shomokh\manager::localized_countries_json(),
+];
+
+echo html_writer::start_div('notranslate', $wrapperattrs);
+echo html_writer::start_div('qlogin-card');
+echo html_writer::tag('div', $logocontent, ['class' => 'qlogin-logo']);
+echo $tabshtml;
+echo html_writer::tag('h2', s($initialtitle), ['class' => 'form-title', 'id' => 'form-title']);
+echo html_writer::tag('p', s($initialsubtitle), ['class' => 'form-subtitle', 'id' => 'form-subtitle']);
+
+$form->display();
+
+$forgotpassclass = 'forgot-password-link' . ($registering ? ' d-none' : '');
+$recoverurl = (new moodle_url('/local/qlogin_shomokh/recover.php'))->out(false);
+echo html_writer::start_div($forgotpassclass, ['id' => 'forgot-password-link']);
+echo html_writer::link($recoverurl, get_string('forgotpassword', 'local_qlogin_shomokh'));
+echo html_writer::end_div();
+
+if (\local_qlogin_shomokh\migration::self_claim_available()) {
+    $claimurl = (new moodle_url('/local/qlogin_shomokh/link_existing.php'))->out(false);
+    echo html_writer::start_div('existing-account-link');
+    echo html_writer::link($claimurl, get_string('claim:entrylink', 'local_qlogin_shomokh'));
+    echo html_writer::end_div();
+}
+
+echo html_writer::end_div();
+echo html_writer::end_div();
+
+echo $OUTPUT->footer();

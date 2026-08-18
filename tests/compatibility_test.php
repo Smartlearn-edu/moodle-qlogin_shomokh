@@ -14,11 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Compatibility test functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Unit tests for legacy retirement safety checks. */
+/**
+ * Unit tests for legacy retirement safety checks.
+ */
 final class compatibility_test extends \advanced_testcase {
     public function test_unified_whatsapp_readiness_rejects_identifiers_as_display_numbers(): void {
         $this->resetAfterTest();

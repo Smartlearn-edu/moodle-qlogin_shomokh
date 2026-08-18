@@ -14,14 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Compatibility bridge for the retired local_phoneverify plugin. @package local_qlogin_shomokh */
+/**
+ * Compatibility functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Safely imports completed legacy states before disabling the old integration. */
+/**
+ * Safely imports completed legacy states before disabling the old integration.
+ */
 final class compatibility {
-    /** Returns a privacy-safe summary of the old plugin state. */
+    /**
+     * Returns a privacy-safe summary of the old plugin state.
+     */
     public static function legacy_status(): array {
         global $DB;
 
@@ -33,7 +42,9 @@ final class compatibility {
         ];
     }
 
-    /** Whether the unified WhatsApp endpoint has all required configuration. */
+    /**
+     * Whether the unified WhatsApp endpoint has all required configuration.
+     */
     public static function unified_whatsapp_ready(): bool {
         return manager::normalise_phone((string)get_config('local_qlogin_shomokh', 'businessnumber')) !== ''
             && preg_match('/^\d+$/', (string)get_config('local_qlogin_shomokh', 'businessphonenumberid')) === 1

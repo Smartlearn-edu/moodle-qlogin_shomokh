@@ -14,10 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Safe uninstall cleanup. @package local_qlogin_shomokh */
+/**
+ * Uninstall functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die();
 
-/** Releases only restrictions tracked as having been applied by this plugin. */
+/**
+ * Releases only restrictions tracked as having been applied by this plugin.
+ */
 function xmldb_local_qlogin_shomokh_uninstall(): bool {
     global $DB;
     $dbman = $DB->get_manager();

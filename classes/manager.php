@@ -15,16 +15,14 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * International phone-number normalisation for the phone-first account flow.
+ * Manager functionality.
  *
- * @package   local_qlogin_shomokh
- * @copyright 2026 Shomokh Al-Elm
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace local_qlogin_shomokh;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Converts accepted phone input to one digits-only username representation.
@@ -78,12 +76,16 @@ final class manager {
         return $digits;
     }
 
-    /** Normalises the canonical value posted by the country picker. */
+    /**
+     * Normalises the canonical value posted by the country picker.
+     */
     public static function normalise_submitted_phone(string $phone, string $countrycode = ''): string {
         return self::normalise_phone($phone);
     }
 
-    /** Removes exactly one repeated dialling-code prefix for an admin repair. */
+    /**
+     * Removes exactly one repeated dialling-code prefix for an admin repair.
+     */
     public static function remove_repeated_country_code(string $phone, string $countrycode): string {
         $normalised = self::normalise_phone($phone);
         $countrycode = preg_replace('/\D/', '', $countrycode);
@@ -140,7 +142,9 @@ final class manager {
         return $code;
     }
 
-    /** Hashes a one-time secret for storage. */
+    /**
+     * Hashes a one-time secret for storage.
+     */
     public static function hash_token(string $token): string {
         return hash('sha256', strtoupper(trim($token)));
     }

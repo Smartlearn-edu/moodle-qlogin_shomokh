@@ -14,13 +14,27 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** User event observer. @package local_qlogin_shomokh */
+/**
+ * Observer functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Observer handler.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 final class observer {
-    /** Starts the grace period when a legacy account first signs in by any route. */
+    /**
+     * Starts the grace period when a legacy account first signs in by any route.
+     */
     public static function user_loggedin(\core\event\user_loggedin $event): void {
         global $DB;
         $user = $DB->get_record('user', ['id' => $event->objectid, 'deleted' => 0]);
@@ -29,7 +43,9 @@ final class observer {
         }
     }
 
-    /** Synchronises required channels after account creation or profile edits. */
+    /**
+     * Synchronises required channels after account creation or profile edits.
+     */
     public static function user_changed(\core\event\base $event): void {
         global $DB;
         $user = $event->get_record_snapshot('user', $event->objectid)

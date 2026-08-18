@@ -16,11 +16,17 @@
 
 namespace local_qlogin_shomokh\form;
 
-defined('MOODLE_INTERNAL') || die();
-require_once($CFG->libdir . '/formslib.php');
-
-/** Moodle form for phone-first login and registration. */
+/**
+ * Auth form form.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 final class auth_form extends \moodleform {
+    /**
+     * Form definition.
+     */
     protected function definition(): void {
         $mform = $this->_form;
         $action = ($this->_customdata['action'] ?? 'login') === 'register' ? 'register' : 'login';
@@ -77,6 +83,13 @@ final class auth_form extends \moodleform {
         ));
     }
 
+    /**
+     * Validate form data.
+     *
+     * @param array $data Submitted data.
+     * @param array $files Uploaded files.
+     * @return array Errors array.
+     */
     public function validation($data, $files): array {
         global $DB;
         $errors = parent::validation($data, $files);

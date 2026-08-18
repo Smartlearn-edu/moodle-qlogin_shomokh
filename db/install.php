@@ -14,10 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Post-install defaults. @package local_qlogin_shomokh */
+/**
+ * Install functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die();
 
-/** Set explicit defaults for fresh installations. */
+/**
+ * Set explicit defaults for fresh installations.
+ */
 function xmldb_local_qlogin_shomokh_install(): void {
     foreach (
         [

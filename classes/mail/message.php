@@ -14,26 +14,48 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Transactional email value object. @package local_qlogin_shomokh */
+/**
+ * Message functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh\mail;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Contains one provider-neutral transactional email. */
+/**
+ * Contains one provider-neutral transactional email.
+ */
 final class message {
-    /** @var int|null Moodle user ID when known. */
+    /**
+     * @var int|null Moodle user ID when known.
+     */
     public $userid;
-    /** @var string Recipient address. */
+    /**
+     * @var string Recipient address.
+     */
     public $to;
-    /** @var string Localised subject. */
+    /**
+     * @var string Localised subject.
+     */
     public $subject;
-    /** @var string Plain-text body. */
+    /**
+     * @var string Plain-text body.
+     */
     public $text;
-    /** @var string Message purpose. */
+    /**
+     * @var string Message purpose.
+     */
     public $purpose;
-    /** @var string Stable provider idempotency key. */
+    /**
+     * @var string Stable provider idempotency key.
+     */
     public $idempotencykey;
 
+    /**
+     *   construct method.
+     */
     public function __construct(
         ?int $userid,
         string $to,

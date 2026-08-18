@@ -14,26 +14,48 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Transactional email result. @package local_qlogin_shomokh */
+/**
+ * Result functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh\mail;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Normalised result returned by every mail provider. */
+/**
+ * Normalised result returned by every mail provider.
+ */
 final class result {
-    /** @var bool Whether the provider accepted the message. */
+    /**
+     * @var bool Whether the provider accepted the message.
+     */
     public $accepted;
-    /** @var bool Whether retrying later is appropriate. */
+    /**
+     * @var bool Whether retrying later is appropriate.
+     */
     public $retryable;
-    /** @var string Provider delivery state. */
+    /**
+     * @var string Provider delivery state.
+     */
     public $status;
-    /** @var int HTTP status where applicable. */
+    /**
+     * @var int HTTP status where applicable.
+     */
     public $httpstatus;
-    /** @var string|null Provider message ID. */
+    /**
+     * @var string|null Provider message ID.
+     */
     public $messageid;
-    /** @var string Safe diagnostic without credentials or full recipient data. */
+    /**
+     * @var string Safe diagnostic without credentials or full recipient data.
+     */
     public $error;
 
+    /**
+     *   construct method.
+     */
     public function __construct(
         bool $accepted,
         bool $retryable,

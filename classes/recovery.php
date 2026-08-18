@@ -14,14 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** WhatsApp password recovery. @package local_qlogin_shomokh */
+/**
+ * Recovery functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Implements a self-initiated WhatsApp recovery handshake. */
+/**
+ * Implements a self-initiated WhatsApp recovery handshake.
+ */
 final class recovery {
-    /** Creates a recovery request without exposing whether a phone exists. */
+    /**
+     * Creates a recovery request without exposing whether a phone exists.
+     */
     public static function start(string $phone): ?array {
         global $DB, $SESSION;
         if (!(bool)get_config('local_qlogin_shomokh', 'recoveryenabled')) {
@@ -67,7 +76,9 @@ final class recovery {
         return [$record, $code];
     }
 
-    /** Returns the current browser's recovery record. */
+    /**
+     * Returns the current browser's recovery record.
+     */
     public static function current() {
         global $DB, $SESSION;
         $id = isset($SESSION->local_qlogin_shomokh_recoveryid)
@@ -75,7 +86,9 @@ final class recovery {
         return $id ? $DB->get_record('local_qlogin_shomokh_recov', ['id' => $id]) : false;
     }
 
-    /** Confirms a RESET message after webhook authentication. */
+    /**
+     * Confirms a RESET message after webhook authentication.
+     */
     public static function verify_from_whatsapp(string $fromphone, string $message): array {
         global $DB;
         if (!(bool)get_config('local_qlogin_shomokh', 'recoveryenabled')) {
@@ -107,7 +120,9 @@ final class recovery {
         return ['status' => 'invalidreset', 'userid' => null];
     }
 
-    /** Changes the password after the WhatsApp handshake. */
+    /**
+     * Changes the password after the WhatsApp handshake.
+     */
     public static function reset_password(string $password): bool {
         global $CFG, $DB, $SESSION;
         if (!(bool)get_config('local_qlogin_shomokh', 'recoveryenabled') || $password === '') {

@@ -14,19 +14,34 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Privacy provider. @package local_qlogin_shomokh */
-namespace local_qlogin_shomokh\privacy;
+/**
+ * Provider functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
-defined('MOODLE_INTERNAL') || die();
+namespace local_qlogin_shomokh\privacy;
 
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\writer;
 
+/**
+ * Privacy Subsystem for local_qlogin_shomokh.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 final class provider implements
     \core_privacy\local\metadata\provider,
     \core_privacy\local\request\plugin\provider {
+    /**
+     * Get metadata collection.
+     */
     public static function get_metadata(collection $collection): collection {
         $collection->add_database_table(
             'local_qlogin_shomokh_verify',
@@ -133,6 +148,9 @@ final class provider implements
         return $collection;
     }
 
+    /**
+     * Get contexts for userid method.
+     */
     public static function get_contexts_for_userid($userid): contextlist {
         global $DB;
         $contexts = new contextlist();
@@ -156,6 +174,9 @@ final class provider implements
         return $contexts;
     }
 
+    /**
+     * Export user data method.
+     */
     public static function export_user_data(approved_contextlist $contextlist): void {
         global $DB;
         $context = \context_system::instance();
@@ -232,6 +253,9 @@ final class provider implements
         writer::with_context($context)->export_data([get_string('pluginname', 'local_qlogin_shomokh')], $data);
     }
 
+    /**
+     * Delete data for all users in context method.
+     */
     public static function delete_data_for_all_users_in_context(\context $context): void {
         global $DB;
         if ($context->contextlevel !== CONTEXT_SYSTEM) {
@@ -256,6 +280,9 @@ final class provider implements
         }
     }
 
+    /**
+     * Delete data for user method.
+     */
     public static function delete_data_for_user(approved_contextlist $contextlist): void {
         global $DB;
         $context = \context_system::instance();

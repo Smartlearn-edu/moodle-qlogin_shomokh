@@ -14,17 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Bounded transactional email retry. @package local_qlogin_shomokh */
 namespace local_qlogin_shomokh\task;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Retries by entity ID so task data never contains a raw one-time token. */
+/**
+ * Bounded transactional email retry task.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 final class retry_email extends \core\task\adhoc_task {
+    /**
+     * Get task name.
+     *
+     * @return string Task name.
+     */
     public function get_name(): string {
         return get_string('task:retryemail', 'local_qlogin_shomokh');
     }
 
+    /**
+     * Execute task logic.
+     */
     public function execute(): void {
         $data = $this->get_custom_data();
         $purpose = clean_param((string)($data->purpose ?? ''), PARAM_ALPHANUMEXT);

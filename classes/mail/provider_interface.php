@@ -14,16 +14,27 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Transactional mail provider contract. @package local_qlogin_shomokh */
+/**
+ * Provider interface functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh\mail;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Allows provider replacement without changing verification or recovery flows. */
+/**
+ * Allows provider replacement without changing verification or recovery flows.
+ */
 interface provider_interface {
-    /** Sends one message and never throws a provider exception to the caller. */
+    /**
+     * Sends one message and never throws a provider exception to the caller.
+     */
     public function send(message $message): result;
 
-    /** Provider identifier stored in minimal audit rows. */
+    /**
+     * Provider identifier stored in minimal audit rows.
+     */
     public function name(): string;
 }

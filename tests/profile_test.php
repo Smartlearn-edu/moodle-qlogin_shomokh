@@ -14,11 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Profile test functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Tests for the self-service verification section on the Moodle profile. */
+/**
+ * Tests for the self-service verification section on the Moodle profile.
+ */
 final class profile_test extends \advanced_testcase {
     public function test_current_eligible_user_gets_verification_profile_action(): void {
         $this->resetAfterTest();

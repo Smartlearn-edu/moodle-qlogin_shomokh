@@ -14,13 +14,27 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Unified non-blocking reminder banner. @package local_qlogin_shomokh */
+/**
+ * Banner functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Banner handler.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 final class banner {
-    /** Returns reminder HTML for required incomplete channels. */
+    /**
+     * Returns reminder HTML for required incomplete channels.
+     */
     public static function render(): string {
         global $PAGE, $USER;
         if (
@@ -93,7 +107,9 @@ final class banner {
         );
     }
 
-    /** Returns a supported expiry action. */
+    /**
+     * Returns a supported expiry action.
+     */
     private static function safe_action(): string {
         $action = (string)get_config('local_qlogin_shomokh', 'expiredaction');
         return in_array($action, ['remind', 'courses', 'suspend'], true) ? $action : 'remind';

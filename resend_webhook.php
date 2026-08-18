@@ -14,7 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Signed Resend delivery webhook. @package local_qlogin_shomokh */
+/**
+ * Resend webhook functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 define('NO_MOODLE_COOKIES', true);
 define('NO_DEBUG_DISPLAY', true);
 require_once('../../config.php');
@@ -36,7 +43,9 @@ if (!$payload) {
 \local_qlogin_shomokh\mail\webhook::apply($payload);
 local_qlogin_shomokh_resend_response(200, 'OK');
 
-/** Sends a minimal response without leaking configuration or payload data. */
+/**
+ * Sends a minimal response without leaking configuration or payload data.
+ */
 function local_qlogin_shomokh_resend_response(int $status, string $message): void {
     http_response_code($status);
     header('Content-Type: text/plain; charset=utf-8');

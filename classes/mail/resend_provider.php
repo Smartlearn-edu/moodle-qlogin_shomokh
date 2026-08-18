@@ -14,17 +14,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Resend API provider. @package local_qlogin_shomokh */
+/**
+ * Resend provider functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh\mail;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Sends directly through Resend using Moodle's HTTP client. */
+/**
+ * Sends directly through Resend using Moodle's HTTP client.
+ */
 final class resend_provider implements provider_interface {
+    /**
+     * Name method.
+     */
     public function name(): string {
         return 'resend';
     }
 
+    /**
+     * Send method.
+     */
     public function send(message $message): result {
         global $CFG;
         [$apikey] = config::resend_api_key();

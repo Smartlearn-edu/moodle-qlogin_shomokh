@@ -14,21 +14,32 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Independent email password recovery. @package local_qlogin_shomokh */
+/**
+ * Email recovery functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Creates and consumes privacy-minimised, one-time email reset links. */
+/**
+ * Creates and consumes privacy-minimised, one-time email reset links.
+ */
 final class email_recovery {
-    /** Whether the independent flow and its schema are ready. */
+    /**
+     * Whether the independent flow and its schema are ready.
+     */
     public static function available(): bool {
         global $DB;
         return (bool)get_config('local_qlogin_shomokh', 'emailrecoveryenabled')
             && $DB->get_manager()->table_exists('local_qlogin_shomokh_reset');
     }
 
-    /** Requests recovery without exposing account existence or provider status. */
+    /**
+     * Requests recovery without exposing account existence or provider status.
+     */
     public static function start(string $email): void {
         global $DB;
         if (!self::available()) {
@@ -97,7 +108,9 @@ final class email_recovery {
         }
     }
 
-    /** Retries the same deterministic link without storing its raw value in task data. */
+    /**
+     * Retries the same deterministic link without storing its raw value in task data.
+     */
     public static function retry(int $recordid, int $attempt): void {
         global $DB;
         $record = $DB->get_record('local_qlogin_shomokh_reset', ['id' => $recordid, 'state' => 'pending']);
@@ -129,7 +142,9 @@ final class email_recovery {
         }
     }
 
-    /** Returns a valid pending request for a raw link token. */
+    /**
+     * Returns a valid pending request for a raw link token.
+     */
     public static function find(string $token) {
         global $DB;
         if (!self::available() || !preg_match('/^[a-f0-9]{64}$/i', $token)) {
@@ -146,7 +161,9 @@ final class email_recovery {
         );
     }
 
-    /** Changes the password once and invalidates existing sessions. */
+    /**
+     * Changes the password once and invalidates existing sessions.
+     */
     public static function consume(string $token, string $password): bool {
         global $CFG, $DB;
         if ($password === '') {
@@ -187,7 +204,9 @@ final class email_recovery {
         }
     }
 
-    /** Sends and increments the request attempt count. */
+    /**
+     * Sends and increments the request attempt count.
+     */
     private static function send_record(
         \stdClass $record,
         \stdClass $user,
@@ -217,7 +236,9 @@ final class email_recovery {
         return $result;
     }
 
-    /** Permits only configured internal authentication accounts. */
+    /**
+     * Permits only configured internal authentication accounts.
+     */
     private static function eligible_user(\stdClass $user): bool {
         return auth_policy::allows($user);
     }

@@ -14,22 +14,35 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Moodle mail provider. @package local_qlogin_shomokh */
+/**
+ * Moodle provider functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh\mail;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Compatibility provider using Moodle's configured outgoing mail. */
+/**
+ * Compatibility provider using Moodle's configured outgoing mail.
+ */
 final class moodle_provider implements provider_interface {
+    /**
+     * Name method.
+     */
     public function name(): string {
         return 'moodle';
     }
 
+    /**
+     * Send method.
+     */
     public function send(message $message): result {
         global $DB;
         try {
             $user = $message->userid ? $DB->get_record('user', ['id' => $message->userid, 'deleted' => 0]) : false;
-            // email_to_user() sends to the address on the user object. A health-check
+            // Email_to_user() sends to the address on the user object. A health-check
             // message may deliberately target another authorised test address, so do
             // not silently send it to the administrator's profile address.
             if (!$user || strcasecmp(trim((string)$user->email), trim($message->to)) !== 0) {

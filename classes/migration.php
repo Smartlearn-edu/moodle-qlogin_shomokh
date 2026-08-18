@@ -14,14 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Existing-account phone alias migration. @package local_qlogin_shomokh */
+/**
+ * Migration functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Produces a dry-run and links only unique, unambiguous phone aliases. */
+/**
+ * Produces a dry-run and links only unique, unambiguous phone aliases.
+ */
 final class migration {
-    /** Whether self-service linking is enabled with phone verification ready. */
+    /**
+     * Whether self-service linking is enabled with phone verification ready.
+     */
     public static function self_claim_available(): bool {
         global $DB;
         return (bool)get_config('local_qlogin_shomokh', 'selfclaimenabled')
@@ -31,7 +40,9 @@ final class migration {
             && $DB->get_manager()->table_exists('local_qlogin_shomokh_verify');
     }
 
-    /** Whether an account may attach its first phone alias through self-service. */
+    /**
+     * Whether an account may attach its first phone alias through self-service.
+     */
     public static function can_self_claim(\stdClass $user): bool {
         if (
             empty($user->id) || !empty($user->deleted) || !empty($user->suspended)
@@ -53,7 +64,9 @@ final class migration {
         return self::set_phone($user, $phone, false);
     }
 
-    /** Changes or adds a sign-in phone after account authentication. */
+    /**
+     * Changes or adds a sign-in phone after account authentication.
+     */
     public static function set_phone(\stdClass $user, string $phone, bool $allowchange): string {
         global $CFG, $DB;
 
@@ -148,7 +161,9 @@ final class migration {
         }
     }
 
-    /** Whether a signed-in account is allowed to add or replace its phone. */
+    /**
+     * Whether a signed-in account is allowed to add or replace its phone.
+     */
     public static function user_can_manage_phone(\stdClass $user): bool {
         if (
             empty($user->id) || !empty($user->deleted) || !empty($user->suspended)
@@ -159,7 +174,9 @@ final class migration {
         return auth_policy::allows($user);
     }
 
-    /** Marks an active alias verified after the matching WhatsApp message succeeds. */
+    /**
+     * Marks an active alias verified after the matching WhatsApp message succeeds.
+     */
     public static function mark_alias_verified(int $userid, string $phone): void {
         global $DB;
         $phone = manager::normalise_phone($phone);
@@ -178,7 +195,9 @@ final class migration {
         }
     }
 
-    /** Trusts one administrator-reviewed batch of pre-phone account emails. */
+    /**
+     * Trusts one administrator-reviewed batch of pre-phone account emails.
+     */
     public static function trust_legacy_emails(int $batchsize = 500): int {
         global $DB;
         if (!verification::available()) {
@@ -220,7 +239,9 @@ final class migration {
         return $trusted;
     }
 
-    /** Returns summary, limited details and every safe candidate. */
+    /**
+     * Returns summary, limited details and every safe candidate.
+     */
     public static function scan(int $detaillimit = 200): array {
         global $DB;
         $admins = [];
@@ -347,7 +368,9 @@ final class migration {
         return ['summary' => $summary, 'details' => $details, 'safe' => $safe];
     }
 
-    /** Inserts up to one batch of still-safe aliases and returns the count. */
+    /**
+     * Inserts up to one batch of still-safe aliases and returns the count.
+     */
     public static function link_safe(int $createdby, int $batchsize = 500): int {
         global $DB;
         $scan = self::scan(0);
@@ -378,12 +401,15 @@ final class migration {
                 $count++;
             } catch (\dml_write_exception $exception) {
                 // A concurrent administrator or batch may have linked it first.
+                unset($exception);
             }
         }
         return $count;
     }
 
-    /** Resolves an active phone alias to the original Moodle username. */
+    /**
+     * Resolves an active phone alias to the original Moodle username.
+     */
     public static function resolve_username(string $phone): ?string {
         global $DB;
         $phone = manager::normalise_phone($phone);
@@ -404,7 +430,9 @@ final class migration {
         return $username === false ? null : (string)$username;
     }
 
-    /** Resolves a current phone while rejecting an original phone replaced by an alias. */
+    /**
+     * Resolves a current phone while rejecting an original phone replaced by an alias.
+     */
     public static function resolve_phone_login(string $phone): ?string {
         global $DB;
         $phone = manager::normalise_phone($phone);
@@ -435,7 +463,9 @@ final class migration {
         return (string)$user->username;
     }
 
-    /** Whether a phone is already claimed by an alias. */
+    /**
+     * Whether a phone is already claimed by an alias.
+     */
     public static function alias_exists(string $phone): bool {
         global $DB;
         $phone = manager::normalise_phone($phone);
@@ -614,7 +644,9 @@ final class migration {
         }
     }
 
-    /** Returns the canonical sign-in phone for a phone-first or aliased user. */
+    /**
+     * Returns the canonical sign-in phone for a phone-first or aliased user.
+     */
     public static function phone_for_user(\stdClass $user): string {
         global $DB;
         if (empty($user->id)) {
@@ -633,7 +665,9 @@ final class migration {
         return manager::normalise_phone((string)$user->username);
     }
 
-    /** Safely normalises international values and legacy local values beginning with zero. */
+    /**
+     * Safely normalises international values and legacy local values beginning with zero.
+     */
     public static function normalise_legacy_phone(string $phone): string {
         $normalised = manager::normalise_phone($phone);
         if ($normalised !== '') {

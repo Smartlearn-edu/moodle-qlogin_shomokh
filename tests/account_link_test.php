@@ -14,11 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Account link test functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Tests secure lookup and authentication for linking an existing account. */
+/**
+ * Tests secure lookup and authentication for linking an existing account.
+ */
 final class account_link_test extends \advanced_testcase {
     public function test_unique_email_and_password_authenticate_existing_account(): void {
         $this->resetAfterTest();

@@ -14,14 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Resend webhook verification. @package local_qlogin_shomokh */
+/**
+ * Webhook functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh\mail;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Verifies Svix signatures and applies privacy-minimal delivery states. */
+/**
+ * Verifies Svix signatures and applies privacy-minimal delivery states.
+ */
 final class webhook {
-    /** Returns a verified payload or false. */
+    /**
+     * Returns a verified payload or false.
+     */
     public static function verify(string $rawbody, string $id, string $timestamp, string $signature) {
         [$secret] = config::resend_webhook_secret();
         if ($secret === '' || $id === '' || !ctype_digit($timestamp) || $signature === '') {
@@ -51,7 +60,9 @@ final class webhook {
         return is_object($payload) && json_last_error() === JSON_ERROR_NONE ? $payload : false;
     }
 
-    /** Updates a known provider message without storing the webhook payload. */
+    /**
+     * Updates a known provider message without storing the webhook payload.
+     */
     public static function apply(\stdClass $payload): bool {
         global $DB;
         $type = clean_param((string)($payload->type ?? ''), PARAM_ALPHANUMEXT);

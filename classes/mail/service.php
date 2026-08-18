@@ -14,14 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Transactional email service. @package local_qlogin_shomokh */
+/**
+ * Service functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh\mail;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Selects one provider, records minimal status and schedules bounded retries. */
+/**
+ * Selects one provider, records minimal status and schedules bounded retries.
+ */
 final class service {
-    /** Sends and records one message. */
+    /**
+     * Sends and records one message.
+     */
     public static function send(message $message): result {
         $provider = self::provider();
         $result = $provider->send($message);
@@ -29,7 +38,9 @@ final class service {
         return $result;
     }
 
-    /** Sends one administrator-requested diagnostic message. */
+    /**
+     * Sends one administrator-requested diagnostic message.
+     */
     public static function send_test(string $recipient, int $userid): result {
         $recipient = \local_qlogin_shomokh\manager::normalise_email($recipient);
         if ($recipient === '') {
@@ -47,7 +58,9 @@ final class service {
         ));
     }
 
-    /** Queues a bounded retry without putting a raw token in custom task data. */
+    /**
+     * Queues a bounded retry without putting a raw token in custom task data.
+     */
     public static function queue_retry(string $purpose, int $entityid, int $attempt): bool {
         $maximum = max(1, min(10, (int)get_config('local_qlogin_shomokh', 'mailmaxattempts')));
         if ($attempt >= $maximum || !in_array($purpose, ['verification', 'recovery', 'reminder'], true)) {
@@ -65,12 +78,16 @@ final class service {
         return true;
     }
 
-    /** Returns a provider instance. */
+    /**
+     * Returns a provider instance.
+     */
     private static function provider(): provider_interface {
         return config::provider() === 'moodle' ? new moodle_provider() : new resend_provider();
     }
 
-    /** Upserts a privacy-minimised delivery log by idempotency key. */
+    /**
+     * Upserts a privacy-minimised delivery log by idempotency key.
+     */
     private static function record(message $message, string $provider, result $result): void {
         global $DB;
         if (!$DB->get_manager()->table_exists('local_qlogin_shomokh_mail')) {
@@ -98,6 +115,7 @@ final class service {
                 $DB->insert_record('local_qlogin_shomokh_mail', $record);
             } catch (\dml_write_exception $exception) {
                 // A concurrent idempotent attempt may have inserted the row first.
+                unset($exception);
             }
             return;
         }

@@ -14,11 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Manager test functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Unit tests for security-sensitive phone and token normalisation. */
+/**
+ * Unit tests for security-sensitive phone and token normalisation.
+ */
 final class manager_test extends \advanced_testcase {
     public function test_normalises_international_numbers_and_arabic_digits(): void {
         $this->assertSame('12025550123', manager::normalise_phone('+1 (202) 555-0123'));

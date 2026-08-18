@@ -14,17 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Authentication-method policy. @package local_qlogin_shomokh */
+/**
+ * Auth policy functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Provides one source of truth for authentication methods supported by the plugin. */
+/**
+ * Provides one source of truth for authentication methods supported by the plugin.
+ */
 final class auth_policy {
-    /** Authentication methods supported when the administrator has not configured a value. */
+    /**
+     * Authentication methods supported when the administrator has not configured a value.
+     */
     private const DEFAULT_TYPES = ['manual', 'email'];
 
-    /** Returns the configured, validated authentication method names. */
+    /**
+     * Returns the configured, validated authentication method names.
+     */
     public static function allowed_types(): array {
         $configured = get_config('local_qlogin_shomokh', 'authtypes');
         if ($configured === false || trim((string)$configured) === '') {
@@ -41,7 +52,9 @@ final class auth_policy {
         return $types ? array_values($types) : self::DEFAULT_TYPES;
     }
 
-    /** Whether one Moodle user belongs to the configured authentication flow. */
+    /**
+     * Whether one Moodle user belongs to the configured authentication flow.
+     */
     public static function allows(\stdClass $user): bool {
         return in_array((string)($user->auth ?? ''), self::allowed_types(), true);
     }

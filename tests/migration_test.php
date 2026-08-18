@@ -14,11 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Migration test functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Tests non-destructive legacy phone migration and alias resolution. */
+/**
+ * Tests non-destructive legacy phone migration and alias resolution.
+ */
 final class migration_test extends \advanced_testcase {
     public function test_email_auth_account_can_self_claim_only_when_configured(): void {
         $this->resetAfterTest();

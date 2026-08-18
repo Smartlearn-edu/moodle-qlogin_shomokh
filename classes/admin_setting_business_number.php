@@ -14,14 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Validated WhatsApp display-number setting. @package local_qlogin_shomokh */
+/**
+ * Admin setting business number functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Prevents Meta identifiers from being saved as a wa.me destination. */
+/**
+ * Prevents Meta identifiers from being saved as a wa.me destination.
+ */
 final class admin_setting_business_number extends \admin_setting_configtext {
-    /** Validate and store a canonical international phone number. */
+    /**
+     * Validate and store a canonical international phone number.
+     */
     public function write_setting($data) {
         $input = trim((string)$data);
         $number = manager::normalise_phone($input);

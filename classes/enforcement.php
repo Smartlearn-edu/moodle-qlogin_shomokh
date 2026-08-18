@@ -14,14 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/** Reversible expiry enforcement. @package local_qlogin_shomokh */
+/**
+ * Enforcement functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_qlogin_shomokh;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** Applies only restrictions which can later be safely identified and reversed. */
+/**
+ * Applies only restrictions which can later be safely identified and reversed.
+ */
 final class enforcement {
-    /** Reconciles one user with the configured action. */
+    /**
+     * Reconciles one user with the configured action.
+     */
     public static function reconcile(int $userid): void {
         $action = (string)get_config('local_qlogin_shomokh', 'expiredaction');
         if (!verification::requires_enforcement($userid) || $action === 'remind' || $action === '') {
@@ -37,20 +46,26 @@ final class enforcement {
         }
     }
 
-    /** Releases restrictions as soon as no required channel is overdue. */
+    /**
+     * Releases restrictions as soon as no required channel is overdue.
+     */
     public static function release_if_complete(int $userid): void {
         if (!verification::requires_enforcement($userid)) {
             self::release($userid);
         }
     }
 
-    /** Releases every restriction previously applied by this plugin. */
+    /**
+     * Releases every restriction previously applied by this plugin.
+     */
     public static function release(int $userid): void {
         self::release_account($userid);
         self::release_courses($userid);
     }
 
-    /** Suspends an account only when it was active. */
+    /**
+     * Suspends an account only when it was active.
+     */
     private static function suspend_account(int $userid): void {
         global $CFG, $DB;
         if ($DB->record_exists('local_qlogin_shomokh_lock', ['userid' => $userid])) {
@@ -73,7 +88,9 @@ final class enforcement {
         }
     }
 
-    /** Restores only an account suspended by this plugin. */
+    /**
+     * Restores only an account suspended by this plugin.
+     */
     private static function release_account(int $userid): void {
         global $CFG, $DB;
         if (!$DB->get_manager()->table_exists('local_qlogin_shomokh_lock')) {
@@ -92,7 +109,9 @@ final class enforcement {
         $DB->delete_records('local_qlogin_shomokh_lock', ['id' => $lock->id]);
     }
 
-    /** Suspends each active enrolment and records exactly what changed. */
+    /**
+     * Suspends each active enrolment and records exactly what changed.
+     */
     private static function suspend_courses(int $userid): void {
         global $DB;
         $sql = "SELECT ue.*, e.enrol, e.id AS enrolinstanceid
@@ -123,7 +142,9 @@ final class enforcement {
         }
     }
 
-    /** Restores only enrolments suspended by this plugin. */
+    /**
+     * Restores only enrolments suspended by this plugin.
+     */
     private static function release_courses(int $userid): void {
         global $DB;
         if (!$DB->get_manager()->table_exists('local_qlogin_shomokh_enlock')) {
