@@ -377,3 +377,6 @@ $string['privacy:metadata:mail'] = 'حالة مختصرة لتسليم البر�
 $string['privacy:metadata:emailreset'] = 'طلبات بريد مشفرة وقصيرة العمر لاستعادة كلمة المرور.';
 $string['privacy:metadata:alias'] = 'رقم دخول بديل مرتبط بمعرّف مستخدم Moodle قائم.';
 $string['privacy:metadata:resend'] = 'يُرسل عنوان المستلم ومحتوى البريد التشغيلي إلى Resend عند اختياره مزودًا.';
+$string['signin_google'] = 'تسجيل الدخول عبر جوجل';
+$string['or_text'] = 'أو';
+$string['signin_with'] = 'تسجيل الدخول عبر {$a}';

@@ -243,6 +243,63 @@ echo html_writer::tag('p', s($initialsubtitle), ['class' => 'form-subtitle', 'id
 
 $form->display();
 
+// Discover enabled OAuth2 issuers and identity providers.
+$oauthproviders = [];
+if (class_exists('\core\oauth2\api')) {
+    try {
+        $issuers = \core\oauth2\api::get_all_issuers();
+        foreach ($issuers as $issuer) {
+            if ($issuer->get('enabled')) {
+                $isgoogle = (stripos($issuer->get('name'), 'google') !== false);
+                $oauthloginurl = new moodle_url('/auth/oauth2/login.php', [
+                    'id' => $issuer->get('id'),
+                    'sesskey' => sesskey(),
+                    'wantsurl' => (new moodle_url('/my/'))->out(false),
+                ]);
+                $oauthproviders[] = [
+                    'id' => $issuer->get('id'),
+                    'name' => $issuer->get_display_name(),
+                    'url' => $oauthloginurl->out(false),
+                    'isgoogle' => $isgoogle,
+                    'image' => $issuer->get('image'),
+                ];
+            }
+        }
+    } catch (Throwable $e) {
+        unset($e);
+    }
+}
+
+if (!empty($oauthproviders)) {
+    echo html_writer::start_div('divider');
+    echo html_writer::tag('span', get_string('or_text', 'local_qlogin_shomokh'));
+    echo html_writer::end_div();
+
+    foreach ($oauthproviders as $provider) {
+        if ($provider['isgoogle']) {
+            $googlesvg = '<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">'
+                . '<path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843'
+                . ' 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.616z" fill="#4285F4"/>'
+                . '<path d="M9 18c2.43 0 4.467-.806 5.956-2.18L12.048 13.56c-.806.54-1.836.86-3.048'
+                . '.86-2.344 0-4.328-1.584-5.036-3.71H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>'
+                . '<path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996'
+                . ' 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>'
+                . '<path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997'
+                . ' 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>'
+                . '</svg>';
+            $label = $googlesvg . ' ' . get_string('signin_google', 'local_qlogin_shomokh');
+            echo html_writer::link($provider['url'], $label, ['class' => 'btn-google']);
+        } else {
+            $iconhtml = '';
+            if (!empty($provider['image'])) {
+                $iconhtml = html_writer::empty_tag('img', ['src' => $provider['image'], 'alt' => '']) . ' ';
+            }
+            $label = $iconhtml . get_string('signin_with', 'local_qlogin_shomokh', $provider['name']);
+            echo html_writer::link($provider['url'], $label, ['class' => 'btn-idp']);
+        }
+    }
+}
+
 $forgotpassclass = 'forgot-password-link' . ($registering ? ' d-none' : '');
 $recoverurl = (new moodle_url('/local/qlogin_shomokh/recover.php'))->out(false);
 echo html_writer::start_div($forgotpassclass, ['id' => 'forgot-password-link']);

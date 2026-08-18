@@ -382,3 +382,6 @@ $string['privacy:metadata:mail'] = 'Minimal transactional email delivery status 
 $string['privacy:metadata:emailreset'] = 'Hashed, short-lived email password reset requests.';
 $string['privacy:metadata:alias'] = 'A phone alias linked to an existing Moodle user ID.';
 $string['privacy:metadata:resend'] = 'Recipient address and transactional email content are sent to Resend when it is the selected provider.';
+$string['signin_google'] = 'Sign in with Google';
+$string['or_text'] = 'Or';
+$string['signin_with'] = 'Sign in with {$a}';
