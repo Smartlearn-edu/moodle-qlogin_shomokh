@@ -140,14 +140,26 @@ document.addEventListener('DOMContentLoaded', function() {
             defaultCountry = 'sa';
         }
     }
-    var picker = window.intlTelInput(input, {
+    var localizedCountries = {};
+    if (root && root.dataset.localizedCountries) {
+        try {
+            localizedCountries = JSON.parse(root.dataset.localizedCountries);
+        } catch (e) {
+            localizedCountries = {};
+        }
+    }
+    var pickerOptions = {
         initialCountry: defaultCountry,
         nationalMode: true,
         separateDialCode: true,
         preferredCountries: [],
         customContainer: 'qlogin-phone-picker notranslate',
         utilsScript: M.cfg.wwwroot + '/local/qlogin_shomokh/vendor/intl-tel-input/build/js/utils.js'
-    });
+    };
+    if (localizedCountries && typeof localizedCountries === 'object' && Object.keys(localizedCountries).length > 0) {
+        pickerOptions.localizedCountries = localizedCountries;
+    }
+    var picker = window.intlTelInput(input, pickerOptions);
     var countryCodeInput = form.querySelector('input[name="phonecountrycode"]');
 
     function syncCountryCode() {

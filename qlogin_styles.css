@@ -433,11 +433,48 @@
 
 /* In RTL languages (e.g. Arabic), the flag button sits on the right side of the input.
    Align the dropdown to the right edge so it extends inward over the card rather than
-   overflowing outside to the left. */
+   overflowing outside to the left, and layout country items in RTL. */
 [dir="rtl"] #qlogin-wrapper .iti__country-list,
-.dir-rtl #qlogin-wrapper .iti__country-list {
+.dir-rtl #qlogin-wrapper .iti__country-list,
+body.dir-rtl .iti__country-list {
+    direction: rtl !important;
     left: auto !important;
     right: 0 !important;
+    text-align: right !important;
+}
+
+[dir="rtl"] #qlogin-wrapper .iti__country,
+.dir-rtl #qlogin-wrapper .iti__country,
+body.dir-rtl .iti__country {
+    direction: rtl !important;
+    text-align: right !important;
+}
+
+[dir="rtl"] #qlogin-wrapper .iti__flag-box,
+.dir-rtl #qlogin-wrapper .iti__flag-box,
+body.dir-rtl .iti__flag-box {
+    margin-left: 8px !important;
+    margin-right: 0 !important;
+    order: 1 !important;
+}
+
+[dir="rtl"] #qlogin-wrapper .iti__country-name,
+.dir-rtl #qlogin-wrapper .iti__country-name,
+body.dir-rtl .iti__country-name {
+    margin-left: auto !important;
+    margin-right: 0 !important;
+    order: 2 !important;
+    text-align: right !important;
+}
+
+[dir="rtl"] #qlogin-wrapper .iti__dial-code,
+.dir-rtl #qlogin-wrapper .iti__dial-code,
+body.dir-rtl .iti__dial-code {
+    direction: ltr !important;
+    margin-left: 0 !important;
+    margin-right: 12px !important;
+    order: 3 !important;
+    unicode-bidi: isolate !important;
 }
 
 #qlogin-wrapper .iti__country {

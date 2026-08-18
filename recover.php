@@ -93,6 +93,7 @@ echo html_writer::start_div('notranslate', [
     'data-default-country' => $defaultcountry,
     'data-show-password' => get_string('showpassword', 'local_qlogin_shomokh'),
     'data-hide-password' => get_string('hidepassword', 'local_qlogin_shomokh'),
+    'data-localized-countries' => \local_qlogin_shomokh\manager::localized_countries_json(),
 ]);
 echo html_writer::start_div('qlogin-card');
 echo $OUTPUT->heading(get_string('recovery:title', 'local_qlogin_shomokh'));

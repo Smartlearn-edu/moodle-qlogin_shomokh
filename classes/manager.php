@@ -144,4 +144,19 @@ final class manager {
     public static function hash_token(string $token): string {
         return hash('sha256', strtoupper(trim($token)));
     }
+
+    /**
+     * Returns JSON-encoded localized country map for the current language.
+     *
+     * @return string
+     */
+    public static function localized_countries_json(): string {
+        $lang = current_language();
+        $countries = get_string_manager()->get_list_of_countries(true, $lang);
+        $localized = [];
+        foreach ($countries as $iso => $name) {
+            $localized[strtolower($iso)] = $name;
+        }
+        return json_encode($localized, JSON_UNESCAPED_UNICODE);
+    }
 }

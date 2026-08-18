@@ -179,7 +179,8 @@ echo $OUTPUT->header();
     data-register-subtitle="<?php echo s(get_string('registersubtitle', 'local_qlogin_shomokh', $gracedays)); ?>"
     data-register-button="<?php echo s(get_string('submit_register', 'local_qlogin_shomokh')); ?>"
     data-show-password="<?php echo s(get_string('showpassword', 'local_qlogin_shomokh')); ?>"
-    data-hide-password="<?php echo s(get_string('hidepassword', 'local_qlogin_shomokh')); ?>">
+    data-hide-password="<?php echo s(get_string('hidepassword', 'local_qlogin_shomokh')); ?>"
+    data-localized-countries="<?php echo s(\local_qlogin_shomokh\manager::localized_countries_json()); ?>">
     <div class="qlogin-card">
         <div class="qlogin-logo">
             <?php if ($logourl) : ?>
