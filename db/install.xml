@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/qlogin_shomokh/db" VERSION="2026081801" COMMENT="XMLDB file for local_qlogin_shomokh">
+  <TABLES>
+    <TABLE NAME="local_qlogin_shomokh_verify" COMMENT="Unified email and phone verification state">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="channel" TYPE="char" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="target" TYPE="char" LENGTH="254" NOTNULL="true"/>
+        <FIELD NAME="tokenhash" TYPE="char" LENGTH="64" NOTNULL="true"/>
+        <FIELD NAME="state" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending"/>
+        <FIELD NAME="expiresat" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="verifiedat" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="lastsentat" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="remindercount" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="lastremindedat" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid_fk" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userchannel_uix" UNIQUE="true" FIELDS="userid, channel"/>
+        <INDEX NAME="channeltarget_ix" UNIQUE="false" FIELDS="channel, target"/>
+        <INDEX NAME="tokenhash_ix" UNIQUE="false" FIELDS="tokenhash"/>
+        <INDEX NAME="stateexpires_ix" UNIQUE="false" FIELDS="state, expiresat"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_qlogin_shomokh_event" COMMENT="Minimal inbound WhatsApp webhook audit log">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="messageid" TYPE="char" LENGTH="255" NOTNULL="true"/>
+        <FIELD NAME="eventtype" TYPE="char" LENGTH="20" NOTNULL="true"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="30" NOTNULL="true"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid_fk" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="messageid_uix" UNIQUE="true" FIELDS="messageid"/>
+        <INDEX NAME="timecreated_ix" UNIQUE="false" FIELDS="timecreated"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_qlogin_shomokh_exempt" COMMENT="Verification exemptions for users and cohorts">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="scope" TYPE="char" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="scopeid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="channel" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="all"/>
+        <FIELD NAME="reason" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="createdby" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="createdby_fk" TYPE="foreign" FIELDS="createdby" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="scoperecord_uix" UNIQUE="true" FIELDS="scope, scopeid, channel"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_qlogin_shomokh_lock" COMMENT="Account suspensions applied by this plugin">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="previoussuspended" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="reason" TYPE="char" LENGTH="30" NOTNULL="true"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid_fk" TYPE="foreign-unique" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_qlogin_shomokh_enlock" COMMENT="Course enrolment suspensions applied by this plugin">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="userenrolid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="previousstatus" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid_fk" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="userenrolid_fk" TYPE="foreign" FIELDS="userenrolid" REFTABLE="user_enrolments" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userenrol_uix" UNIQUE="true" FIELDS="userid, userenrolid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_qlogin_shomokh_recov" COMMENT="Short-lived WhatsApp password recovery requests">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="phone" TYPE="char" LENGTH="20" NOTNULL="true"/>
+        <FIELD NAME="tokenhash" TYPE="char" LENGTH="64" NOTNULL="true"/>
+        <FIELD NAME="state" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending"/>
+        <FIELD NAME="expiresat" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="verifiedat" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="attempts" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid_fk" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="phonetoken_ix" UNIQUE="false" FIELDS="phone, tokenhash"/>
+        <INDEX NAME="stateexpires_ix" UNIQUE="false" FIELDS="state, expiresat"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_qlogin_shomokh_mail" COMMENT="Minimal transactional email delivery log">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="purpose" TYPE="char" LENGTH="20" NOTNULL="true"/>
+        <FIELD NAME="provider" TYPE="char" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="recipienthash" TYPE="char" LENGTH="64" NOTNULL="true"/>
+        <FIELD NAME="recipienthint" TYPE="char" LENGTH="100" NOTNULL="true"/>
+        <FIELD NAME="messageid" TYPE="char" LENGTH="100" NOTNULL="false"/>
+        <FIELD NAME="idempotencykey" TYPE="char" LENGTH="64" NOTNULL="true"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true"/>
+        <FIELD NAME="httpstatus" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="attempts" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="lasterror" TYPE="char" LENGTH="255" NOTNULL="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid_fk" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idempotency_uix" UNIQUE="true" FIELDS="idempotencykey"/>
+        <INDEX NAME="messageid_ix" UNIQUE="false" FIELDS="messageid"/>
+        <INDEX NAME="userpurpose_ix" UNIQUE="false" FIELDS="userid, purpose"/>
+        <INDEX NAME="statustime_ix" UNIQUE="false" FIELDS="status, timecreated"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_qlogin_shomokh_reset" COMMENT="Hashed one-time email password reset requests">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="channel" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="email"/>
+        <FIELD NAME="targethash" TYPE="char" LENGTH="64" NOTNULL="true"/>
+        <FIELD NAME="tokenhash" TYPE="char" LENGTH="64" NOTNULL="true"/>
+        <FIELD NAME="state" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending"/>
+        <FIELD NAME="expiresat" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="attempts" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid_fk" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="tokenhash_ix" UNIQUE="false" FIELDS="tokenhash"/>
+        <INDEX NAME="userstate_ix" UNIQUE="false" FIELDS="userid, state"/>
+        <INDEX NAME="targettime_ix" UNIQUE="false" FIELDS="targethash, timecreated"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_qlogin_shomokh_alias" COMMENT="Verified or reviewed phone aliases for existing Moodle users">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="phone" TYPE="char" LENGTH="20" NOTNULL="true"/>
+        <FIELD NAME="source" TYPE="char" LENGTH="20" NOTNULL="true"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="active"/>
+        <FIELD NAME="verified" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="createdby" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid_fk" TYPE="foreign-unique" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="createdby_fk" TYPE="foreign" FIELDS="createdby" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="phone_uix" UNIQUE="true" FIELDS="phone"/>
+        <INDEX NAME="status_ix" UNIQUE="false" FIELDS="status"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

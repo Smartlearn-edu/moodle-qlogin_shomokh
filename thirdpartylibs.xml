@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<libraries>
+  <library>
+    <location>vendor/intl-tel-input/</location>
+    <name>intl-tel-input</name>
+    <description>International telephone input country picker and validation utilities</description>
+    <version>18.2.1</version>
+    <license>MIT</license>
+    <repository>https://github.com/jackocnr/intl-tel-input</repository>
+  </library>
+</libraries>

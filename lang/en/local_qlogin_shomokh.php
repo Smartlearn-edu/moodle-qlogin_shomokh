@@ -1,0 +1,389 @@
+<?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
+/**
+ * Local qlogin shomokh functionality.
+ *
+ * @package    local_qlogin_shomokh
+ * @copyright  2026 Shomokh Al-Elm <support@shomokh.edu.sa>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+$string['pluginname'] = 'Shomokh phone sign-in and verification';
+$string['authenticationtabs'] = 'Account access';
+$string['login'] = 'Log in';
+$string['register'] = 'Create account';
+$string['logintitle'] = 'Welcome back';
+$string['loginsubtitle'] = 'Use your mobile number, email or username with your password.';
+$string['registertitle'] = 'Create your account';
+$string['registersubtitle'] = 'Start learning immediately, then complete the required verification within {$a} days.';
+$string['phone'] = 'Mobile number';
+$string['loginidentifier'] = 'Mobile number, email or username';
+$string['phone_help'] = 'Choose the country and enter the mobile number. '
+    . 'It is stored as an international number and becomes the unique username.';
+$string['phoneplaceholder'] = 'Mobile number';
+$string['phonehelp'] = 'Choose your country, then enter the mobile number.';
+$string['fullname'] = 'Full name';
+$string['fullnameplaceholder'] = 'Your full name';
+$string['email'] = 'Email address';
+$string['emailhelp'] = 'Use a real email address you can access.';
+$string['password'] = 'Password';
+$string['showpassword'] = 'Show password';
+$string['hidepassword'] = 'Hide password';
+$string['forgotpassword'] = 'Forgot your password?';
+$string['submit_login'] = 'Start learning';
+$string['submit_register'] = 'Create account';
+$string['website'] = 'Website';
+$string['error:phone'] = 'Enter a valid mobile number and choose its country.';
+$string['error:identifier'] = 'Enter your mobile number, email or username.';
+$string['error:password'] = 'Enter your password.';
+$string['error:fullname'] = 'Enter your full name.';
+$string['error:fullnamelong'] = 'The first and family-name parts must each be 100 characters or fewer.';
+$string['error:email'] = 'Enter a valid email address.';
+$string['error:emailexists'] = 'This email address is already linked to another account.';
+$string['error:emailexistsclaim'] = 'This email already belongs to an account. Use “Link an existing account” below instead of creating a duplicate.';
+$string['error:userexists'] = 'This mobile number already has an account. Log in instead.';
+$string['error:authfailed'] = 'The mobile number or password is incorrect.';
+$string['error:usernotfound'] = 'No account matches these sign-in details. Check them or create an account.';
+$string['error:wrongpassword'] = 'The account exists, but the password is incorrect.';
+$string['error:accountunavailable'] = 'This account is unavailable. Contact support.';
+$string['error:emailambiguous'] = 'This email belongs to more than one account. Use the old username or contact support.';
+$string['error:createaccount'] = 'The account could not be created. Try again or contact support.';
+$string['error:businessnumber'] = 'Enter the actual WhatsApp number in international format (8 to 15 digits), not a Meta identifier.';
+$string['invalidaction'] = 'The requested action is not valid.';
+$string['accountcreated'] = 'Your account was created. You can continue learning while completing verification.';
+$string['claim:title'] = 'Link an existing account';
+$string['claim:intro'] = 'Keep your existing account, grades and enrolments. Confirm its current password, add your mobile number, then verify it through WhatsApp.';
+$string['claim:introloggedin'] = 'Add a mobile number to this existing account. Your username, grades and enrolments will not change.';
+$string['claim:entrylink'] = 'If your account is not linked to a mobile number, link it now';
+$string['claim:identifier'] = 'Existing email or username';
+$string['claim:identifierrequired'] = 'Enter the email or username of your existing account.';
+$string['claim:phone'] = 'New mobile sign-in number';
+$string['claim:submit'] = 'Link mobile to this account';
+$string['claim:invalidcredentials'] = 'The existing account details are incorrect. Check the email or username and password.';
+$string['claim:noteligible'] = 'This account cannot use self-service linking. Sign in normally or contact support.';
+$string['claim:phoneused'] = 'This mobile number is already linked to another account.';
+$string['claim:accountalreadylinked'] = 'This account already has a mobile number. Sign in by email or username, then change it from account verification.';
+$string['claim:busy'] = 'The account is being updated. Wait a moment and try again.';
+$string['claim:failed'] = 'The mobile number could not be linked. Try again or contact support.';
+$string['claim:disabled'] = 'Self-service linking is currently disabled. Contact support if you need to update an existing account.';
+$string['claim:success'] = 'Your mobile number was linked to the same account. Complete WhatsApp verification now.';
+$string['claim:alreadylinked'] = 'This mobile number is already linked to your account.';
+$string['claim:forgotpassword'] = 'Forgot the password for the existing account? Reset it first';
+$string['claim:banner'] = 'Add and verify your mobile number by {$a}. You can keep using the platform during the grace period.';
+$string['claim:bannerexpired'] = 'The mobile-verification deadline ({$a}) has passed. Add your mobile number now.';
+$string['claim:bannerbutton'] = 'Link my mobile number';
+$string['claim:profileintro'] = 'This existing account has no mobile sign-in number yet. Link one without creating a new account.';
+$string['claim:changetitle'] = 'Change mobile number';
+$string['claim:changeintro'] = 'Enter the new mobile and your current password. The old number will stop working for sign-in, and the new one must be verified through WhatsApp.';
+$string['claim:changephone'] = 'Change mobile number';
+$string['claim:currentpassword'] = 'Current password';
+$string['claim:changesubmit'] = 'Save the new mobile';
+$string['claim:changesuccess'] = 'The new mobile was saved and the old number was disabled for sign-in. Complete WhatsApp verification.';
+$string['claim:wrongpassword'] = 'The current password is incorrect.';
+$string['claim:phonerequired'] = 'Add a valid mobile number before starting WhatsApp verification.';
+$string['settings'] = 'Shomokh sign-in and verification';
+$string['settings:verification'] = 'Verification policy';
+$string['settings:verification_desc'] = 'Change the grace period, required channels and expiry action without modifying code.';
+$string['defaultcountry'] = 'Default country in the phone picker';
+$string['defaultcountry_desc'] = 'Two-letter ISO country code, for example sa, eg or gb. All countries remain available.';
+$string['enabled'] = 'Enable unified verification';
+$string['enabled_desc'] = 'Creates and displays verification requests for eligible accounts.';
+$string['requireemail'] = 'Require email verification';
+$string['requireemail_desc'] = 'Email remains available for recovery and communication.';
+$string['requirephone'] = 'Require WhatsApp phone verification';
+$string['requirephone_desc'] = 'The student starts the message to avoid outbound OTP costs.';
+$string['graceperioddays'] = 'Verification grace period (days)';
+$string['graceperioddays_desc'] = 'Default: 30. Access during and after the grace period depends on the expiry action below.';
+$string['expiredaction'] = 'Action after the grace period';
+$string['expiredaction_desc'] = 'Reminder only is the safest default. Other actions are reversible '
+    . 'and affect only restrictions applied by this plugin.';
+$string['expiredaction:remind'] = 'Remind only; do not block access';
+$string['expiredaction:courses'] = 'Suspend course enrolments';
+$string['expiredaction:suspend'] = 'Suspend the account';
+$string['reminderintervaldays'] = 'Days between reminders';
+$string['reminderintervaldays_desc'] = 'Minimum interval between automated reminders after expiry.';
+$string['maxreminders'] = 'Maximum reminders';
+$string['maxreminders_desc'] = 'Maximum automated email reminders for one verification request.';
+$string['resendcooldownsetting'] = 'Same-channel resend cooldown (seconds)';
+$string['resendcooldown_desc'] = 'Applied independently to email, WhatsApp verification, and recovery. It never blocks another channel.';
+$string['authtypes'] = 'Eligible authentication methods';
+$string['authtypes_desc'] = 'Comma-separated Moodle auth methods. Default: manual,email. Add oauth2 only when OAuth users ' .
+    'must follow this plugin\'s phone and email verification policy; this also displays the configured OAuth providers.';
+$string['selfclaimenabled'] = 'Enable self-service linking for existing accounts';
+$string['selfclaimenabled_desc'] = 'Allows an authenticated existing user, or a user who proves the current password, to attach one unique mobile sign-in alias without changing the Moodle user ID. Unified phone verification must also be enabled.';
+$string['settings:whatsapp'] = 'WhatsApp and recovery';
+$string['settings:whatsapp_desc'] = 'Meta webhook credentials are stored only in Moodle configuration.';
+$string['businessnumber'] = 'WhatsApp business number';
+$string['businessnumber_desc'] = 'The actual Display phone number shown in Meta, in international format (8 to 15 digits). '
+    . 'Do not enter a WhatsApp Business Account ID or Phone Number ID.';
+$string['businessphonenumberid'] = 'Meta phone number ID';
+$string['businessphonenumberid_desc'] = 'The Phone Number ID shown in Meta WhatsApp configuration.';
+$string['webhookverifytoken'] = 'Webhook verify token';
+$string['webhookverifytoken_desc'] = 'A private value shared with Meta during webhook registration.';
+$string['webhookappsecret'] = 'Meta app secret';
+$string['webhookappsecret_desc'] = 'Used to validate the X-Hub-Signature-256 header. Never place it in source control.';
+$string['recoveryenabled'] = 'Enable WhatsApp password recovery';
+$string['recoveryenabled_desc'] = 'Allows a user to initiate a WhatsApp message and then choose a new password.';
+$string['recoveryexpiryminutes'] = 'Recovery request lifetime (minutes)';
+$string['recoveryexpiryminutes_desc'] = 'A short validity period for password-recovery handshakes.';
+$string['eventretentiondays'] = 'Webhook audit retention (days)';
+$string['eventretentiondays_desc'] = 'Automatically deletes minimal webhook audit rows older than this period. Default: 90.';
+$string['channel:email'] = 'email';
+$string['channel:phone'] = 'mobile number';
+$string['state:pending'] = 'Pending';
+$string['state:verified'] = 'Verified';
+$string['state:expired'] = 'Expired';
+$string['state:waived'] = 'Waived';
+$string['banner:pending'] = 'Complete verification of {$a->channels} by {$a->deadline}. You can continue using the platform.';
+$string['banner:expired:remind'] = 'Verification of {$a->channels} is overdue. Your access remains available.';
+$string['banner:expired:courses'] = 'Verification of {$a->channels} is overdue. Course access may be suspended until completion.';
+$string['banner:expired:suspend'] = 'Verification of {$a->channels} is overdue. The account may be suspended until completion.';
+$string['banner:verifyphone'] = 'Verify mobile with WhatsApp';
+$string['banner:continue'] = 'Complete verification';
+$string['verify:open'] = 'Open verification centre';
+$string['verify:title'] = 'Verification centre';
+$string['verify:intro'] = 'Complete the required steps within the configured grace period. The default is {$a} days.';
+$string['verify:notrequired'] = 'No verification is required for this account.';
+$string['verify:complete'] = 'Verified';
+$string['profile:category'] = 'Account verification';
+$string['profile:title'] = 'Email and mobile verification';
+$string['profile:channelstatus'] = '{$a->channel}: {$a->status}';
+$string['profile:verified'] = 'Verified';
+$string['profile:pending'] = 'Awaiting verification';
+$string['profile:viewverification'] = 'View verification status';
+$string['profile:completeverification'] = 'Complete verification';
+$string['verify:phoneheading'] = 'Verify your mobile with WhatsApp';
+$string['verify:emailheading'] = 'Verify your email';
+$string['verify:phonecomplete'] = 'Mobile {$a} is verified.';
+$string['verify:emailcomplete'] = 'Email {$a} is verified.';
+$string['verify:emailpending'] = 'The address {$a} is awaiting verification.';
+$string['verify:phonepending'] = 'The number {$a} is awaiting WhatsApp verification.';
+$string['verify:phonemissing'] = 'No mobile number is linked yet. Add one now; the original grace deadline will not restart.';
+$string['verify:stepopen'] = 'Select the green button below.';
+$string['verify:stepsend'] = 'Send the prepared message in WhatsApp without changing it.';
+$string['verify:stepreturn'] = 'Return to this page; the status will refresh automatically.';
+$string['verify:sendwhatsapp'] = 'Open WhatsApp and send verification message';
+$string['verify:preparewhatsapp'] = 'Prepare WhatsApp verification on this device';
+$string['verify:manualfallback'] = 'WhatsApp did not open?';
+$string['verify:manualhelp'] = 'Open WhatsApp manually and send this exact message to the academy number {$a}:';
+$string['verify:trouble'] = 'I have another problem';
+$string['verify:replacecode'] = 'Create a new message and cancel the previous one';
+$string['verify:emailhelp'] = 'You may correct the address, or resend the link after the email cooldown. WhatsApp has a separate cooldown.';
+$string['verify:whatsappinstructions'] = 'Send the exact message below from the same registered mobile number.';
+$string['verify:openwhatsapp'] = 'Open WhatsApp';
+$string['verify:whatsappnotconfigured'] = 'The academy WhatsApp display number is missing or invalid. Check the WhatsApp business number setting.';
+$string['verify:newcode'] = 'Generate a new code';
+$string['verify:codeinanotherbrowser'] = 'A code already exists in another browser session. '
+    . 'Generate a new code here to replace it.';
+$string['phonecodecreated'] = 'A new phone-verification code was generated.';
+$string['phonealreadyverified'] = 'This mobile number is already verified.';
+$string['emailpage:saveandsend'] = 'Save email and send link';
+$string['emailpage:resend'] = 'Send a new verification link';
+$string['emailupdatedandsent'] = 'The email address was saved and a verification message was queued.';
+$string['emailsent'] = 'A verification email was queued.';
+$string['emailnotsent'] = 'The verification email could not be sent. Moodle will retry it through cron.';
+$string['emailunchanged'] = 'This email address is already verified.';
+$string['emailpendingunchanged'] = 'The email address did not change and a verification link has already been sent. '
+    . 'Check the inbox and spam folder, or resend after the email cooldown. You can continue WhatsApp verification now.';
+$string['waitbeforeresend'] = 'A request was recently sent through this channel. Wait {$a} seconds before resending '
+    . 'through the same channel; you can continue with the other channel now.';
+$string['resendavailablein'] = 'You can resend through this channel in {$a} seconds. This does not affect the other channel.';
+$string['verifyemail:title'] = 'Email verification';
+$string['verifyemail:verified'] = 'Your email address has been verified.';
+$string['verifyemail:invalid'] = 'This verification link is invalid or has already been replaced.';
+$string['backtologin'] = 'Back to sign in';
+$string['verificationemail:subject'] = '{$a->site}: verify your email address';
+$string['verificationemail:body'] = 'Hello {$a->name},' . "\n\n"
+    . 'Verify your email by opening this link:' . "\n" . '{$a->url}' . "\n\n"
+    . 'The current grace period remaining is approximately {$a->days} days.';
+$string['reminder:subject'] = 'Complete your platform verification';
+$string['reminder:body'] = 'Hello {$a->name},' . "\n\n"
+    . 'Please complete the outstanding verification steps here:' . "\n" . '{$a->url}';
+$string['recovery:title'] = 'Password recovery';
+$string['recovery:emailtitle'] = 'Recover by email';
+$string['recovery:emailintro'] = 'Enter the email linked to the account. The plugin sends a secure, single-use reset link.';
+$string['recovery:emailsubmit'] = 'Send recovery link';
+$string['recovery:emailfailed'] = 'The recovery link could not be sent now. Try later or use WhatsApp.';
+$string['recovery:whatsapptitle'] = 'Recover by WhatsApp';
+$string['recovery:intro'] = 'Enter the mobile number used to sign in, then send the prepared WhatsApp message.';
+$string['recovery:start'] = 'Continue with WhatsApp';
+$string['recovery:genericstarted'] = 'If the number belongs to an active account, recovery instructions are now available.';
+$string['recovery:sendmessage'] = 'Send the exact message below from the registered number, then return and check the result.';
+$string['recovery:check'] = 'Check verification';
+$string['recovery:verified'] = 'The WhatsApp message was verified. Choose a new password.';
+$string['recovery:newpasswordagain'] = 'New password again';
+$string['recovery:savepassword'] = 'Save new password';
+$string['recovery:passwordchanged'] = 'Your password has been changed. You can now sign in.';
+$string['recovery:expired'] = 'The recovery request has expired. Start again.';
+$string['recovery:disabled'] = 'WhatsApp recovery is disabled. Use email recovery instead.';
+$string['recovery:useemail'] = 'Use Moodle email recovery';
+$string['manage:title'] = 'Verification management';
+$string['manage:queue'] = 'Pending and expired requests';
+$string['manage:exemptions'] = 'Exemptions';
+$string['manage:scope'] = 'Scope';
+$string['manage:scopeid'] = 'User or cohort ID';
+$string['manage:channel'] = 'Channel';
+$string['manage:allchannels'] = 'All required channels';
+$string['manage:reason'] = 'Reason';
+$string['manage:addexemption'] = 'Save exemption';
+$string['manage:target'] = 'Masked destination';
+$string['manage:deadline'] = 'Deadline';
+$string['manage:saved'] = 'The exemption was saved.';
+$string['manage:deleted'] = 'The exemption was deleted.';
+$string['manage:notfound'] = 'The specified user or cohort was not found.';
+$string['task:processverifications'] = 'Process verification deadlines and reminders';
+$string['privacy:metadata:verify'] = 'Verification status for required contact channels.';
+$string['privacy:metadata:event'] = 'Minimal WhatsApp webhook processing audit.';
+$string['privacy:metadata:recovery'] = 'Short-lived WhatsApp password recovery requests.';
+$string['privacy:metadata:restrictions'] = 'Reversible restrictions applied by the plugin.';
+$string['privacy:metadata:exemptions'] = 'Administrative verification exemptions.';
+$string['privacy:metadata:whatsapp'] = 'The registered phone number and one-time command are sent to WhatsApp '
+    . 'only when the user chooses to send the prepared message.';
+$string['settings:mail'] = 'Transactional email';
+$string['settings:mail_desc'] = 'Send verification and plugin password-recovery messages directly through Resend, '
+    . 'or use Moodle mail. Resend is independent of Moodle SMTP for the initial send.';
+$string['mailprovider'] = 'Email provider for this plugin';
+$string['mailprovider_desc'] = 'Only one provider sends each message. Moodle SMTP remains separate for other Moodle notifications.';
+$string['mailprovider:resend'] = 'Resend API (recommended)';
+$string['mailprovider:moodle'] = 'Moodle email';
+$string['resendapikey'] = 'Resend API key';
+$string['resendapikey_desc'] = 'Use a Sending-access, domain-scoped key. An external $CFG value or '
+    . 'LOCAL_QLOGIN_SHOMOKH_RESEND_API_KEY takes precedence and is recommended for production.';
+$string['resendfromemail'] = 'Resend sender address';
+$string['resendfromemail_desc'] = 'An address under a domain verified in Resend, for example no-reply@mail.example.com.';
+$string['resendfromname'] = 'Resend sender name';
+$string['resendfromname_desc'] = 'The academy name shown to recipients.';
+$string['resendtimeout'] = 'Resend request timeout (seconds)';
+$string['resendtimeout_desc'] = 'Short timeout for the immediate API request. Valid range: 3 to 30 seconds.';
+$string['mailmaxattempts'] = 'Maximum email attempts';
+$string['mailmaxattempts_desc'] = 'Includes the immediate attempt and scheduled retries. Valid range: 1 to 10.';
+$string['emailrecoveryenabled'] = 'Enable independent email recovery';
+$string['emailrecoveryenabled_desc'] = 'Uses this plugin email provider and a hashed, one-time reset token instead of Moodle forgot-password mail.';
+$string['resendwebhooksecret'] = 'Resend webhook signing secret';
+$string['resendwebhooksecret_desc'] = 'The whsec_ value from Resend. An external $CFG value or '
+    . 'LOCAL_QLOGIN_SHOMOKH_RESEND_WEBHOOK_SECRET takes precedence.';
+$string['maillogretentiondays'] = 'Email audit retention (days)';
+$string['maillogretentiondays_desc'] = 'Minimal delivery logs are removed automatically after this period. Default: 90.';
+$string['legacydefaultcountrycode'] = 'Default dialling code for legacy local numbers';
+$string['legacydefaultcountrycode_desc'] = 'Used only by the migration report for old numbers beginning with 0. Default: 966.';
+$string['mail:sent'] = 'The email was accepted by the configured provider.';
+$string['mail:retryqueued'] = 'The provider is temporarily unavailable. A safe retry was queued; you can continue using the platform.';
+$string['mail:sendfailed'] = 'The email could not be sent. An administrator can inspect the email health page.';
+$string['mail:notconfigured'] = 'Email is not ready. An administrator must configure both the Resend API key and a sender address on a verified domain.';
+$string['task:retryemail'] = 'Retry a Shomokh transactional email';
+$string['health:title'] = 'Shomokh integration health';
+$string['health:intro'] = 'Read-only checks for email, webhooks, cron and recent delivery attempts. No secret value is displayed.';
+$string['health:check'] = 'Check';
+$string['health:result'] = 'Result';
+$string['health:ok'] = 'Ready';
+$string['health:warning'] = 'Needs attention';
+$string['health:provider'] = 'Selected email provider';
+$string['health:keysource'] = 'Resend key source';
+$string['health:keysource:external'] = 'External configuration';
+$string['health:keysource:database'] = 'Moodle database setting';
+$string['health:keysource:missing'] = 'Missing';
+$string['health:sender'] = 'Sender address';
+$string['health:webhook'] = 'Resend webhook signing secret';
+$string['health:webhookurl'] = 'Resend webhook URL';
+$string['health:cron'] = 'Most recent Moodle task log';
+$string['health:never'] = 'No task execution was found';
+$string['health:whatsapp'] = 'Unified WhatsApp configuration';
+$string['health:whatsappmissing'] = 'One or more required Meta values are missing or invalid';
+$string['health:whatsappwebhookurl'] = 'Meta WhatsApp webhook URL';
+$string['health:configuredphoneid'] = 'Configured Meta Phone Number ID';
+$string['health:whatsappstats'] = 'Recent WhatsApp webhook states';
+$string['health:eventtype'] = 'Event type';
+$string['health:whatsapptesttitle'] = 'Test WhatsApp from this administrator account';
+$string['health:whatsapptestintro'] = 'Runs the real inbound path without creating a student or changing any user verification state. The challenge expires after 10 minutes.';
+$string['health:whatsappteststart'] = 'Create WhatsApp integration test';
+$string['health:whatsapptestcreated'] = 'The temporary WhatsApp test is ready.';
+$string['health:whatsapptestopen'] = 'Open WhatsApp and send test message';
+$string['health:whatsapptestlast'] = 'Last test: {$a->status} — {$a->time}';
+$string['health:whatsappteststatus:passed'] = 'Passed';
+$string['health:whatsappteststatus:invalidcode'] = 'The code did not match';
+$string['health:whatsappteststatus:expired'] = 'The test expired';
+$string['health:whatsappteststatus:unmatchedphone'] = 'The sender number was invalid';
+$string['health:legacyplugin'] = 'Old local_phoneverify plugin';
+$string['health:legacynotpresent'] = 'Not installed';
+$string['health:legacyenabled'] = 'Still enabled ({$a} retained records)';
+$string['health:legacydisabled'] = 'Disabled ({$a} retained records)';
+$string['health:legacytitle'] = 'Retire the duplicate phone-verification flow';
+$string['health:legacyintro'] = 'Imports matching completed states, disables the old webhook and task flow, and retains its tables for rollback. The unified plugin suppresses its old banner and redirects its student page.';
+$string['health:legacyretire'] = 'Import completed states and disable the old plugin';
+$string['health:legacyretired'] = 'The old flow was disabled. Imported: {$a->imported}; skipped for manual review: {$a->skipped}.';
+$string['health:legacywhatsappmissing'] = 'Complete the unified WhatsApp settings before disabling the old integration.';
+$string['health:mailstats'] = 'Recent email delivery states';
+$string['health:testtitle'] = 'Send a test email';
+$string['health:testintro'] = 'Sends one message through the selected plugin provider. Use an authorised test address.';
+$string['health:testrecipient'] = 'Test recipient';
+$string['health:testsend'] = 'Send test message';
+$string['health:testsubject'] = '{$a}: email integration test';
+$string['health:testbody'] = 'This message confirms that the Shomokh plugin email integration is working.';
+$string['health:testsent'] = 'The test message was accepted by the provider.';
+$string['health:testfailed'] = 'The test message was not accepted. Review the checks and recent delivery log.';
+$string['health:purpose'] = 'Purpose';
+$string['health:recipient'] = 'Masked recipient';
+$string['health:attempts'] = 'Attempts';
+$string['health:time'] = 'Last update';
+$string['migration:title'] = 'Existing account migration';
+$string['migration:intro'] = 'The report does not change usernames or create users. It finds safe phone aliases and conflicts before activation.';
+$string['migration:summary'] = 'Dry-run summary';
+$string['migration:total'] = 'Accounts scanned';
+$string['migration:phoneusername'] = 'Already using a phone username';
+$string['migration:mapped'] = 'Already linked by alias';
+$string['migration:safe'] = 'Safe unique aliases';
+$string['migration:duplicate'] = 'Shared or conflicting numbers';
+$string['migration:missing'] = 'No phone value';
+$string['migration:invalid'] = 'Invalid or ambiguous phone value';
+$string['migration:duplicateemail'] = 'Accounts with a duplicated email';
+$string['migration:downloadcsv'] = 'Download masked CSV report';
+$string['migration:category'] = 'Classification';
+$string['migration:source'] = 'Source';
+$string['migration:userid'] = 'User ID';
+$string['migration:phonealias'] = 'Masked phone alias';
+$string['migration:linksafe'] = 'Link safe aliases';
+$string['migration:linkconfirm'] = 'This adds aliases only. It does not change usernames, grades or enrolments.';
+$string['migration:linksuccess'] = '{$a} safe phone aliases were linked.';
+$string['migration:nosafe'] = 'No new safe aliases were available.';
+$string['migration:limited'] = 'The detail table shows the first {$a} accounts; totals cover the full scan.';
+$string['migration:selfclaiminfo'] = 'Accounts without a stored mobile can use self-service linking after proving the existing password. If the owner cannot access the password or email, support must verify identity, open the account from its user ID below, add the confirmed phone field, and run the dry-run again. Never match by name alone.';
+$string['migration:trustlegacy'] = 'Trust verified emails for legacy accounts (500 per batch)';
+$string['migration:repairtitle'] = 'Repair a duplicated country code';
+$string['migration:repairintro'] = 'Use this only when the dialling code appears twice, such as 966966…. The repair removes exactly one duplicate and protects phones owned by another account.';
+$string['migration:repairuserid'] = 'User ID';
+$string['migration:repairbutton'] = 'Check and repair phone';
+$string['migration:repairsuccess'] = 'The phone was corrected to {$a}. The user must create a new verification message.';
+$string['migration:repairnotneeded'] = 'This account phone does not contain the configured duplicated country code.';
+$string['migration:repairfailed'] = 'The phone could not be repaired. Check the logs and phone conflicts.';
+$string['migration:trustconfirm'] = 'Use this only after confirming that pre-phone accounts had already verified their email. It affects accounts whose old username is not a phone; new phone-first accounts are excluded.';
+$string['migration:trustsuccess'] = '{$a} legacy email records were marked verified. Run again if more accounts remain.';
+$string['migration:notrustneeded'] = 'No additional legacy email records needed updating.';
+$string['recovery:emailgenericstarted'] = 'If the address belongs to an eligible account, a recovery message has been requested.';
+$string['recovery:emaildisabled'] = 'Email recovery is disabled. Use WhatsApp recovery or contact support.';
+$string['recovery:emailsubject'] = '{$a->site}: reset your password';
+$string['recovery:emailbody'] = 'Hello {$a->name},' . "\n\n" . 'Open this single-use link to choose a new password:'
+    . "\n" . '{$a->url}' . "\n\n" . 'The link expires in {$a->minutes} minutes.';
+$string['recovery:resettitle'] = 'Choose a new password';
+$string['recovery:invalidlink'] = 'This password-reset link is invalid, expired or already used.';
+$string['privacy:metadata:mail'] = 'Minimal transactional email delivery status without storing the full recipient address.';
+$string['privacy:metadata:emailreset'] = 'Hashed, short-lived email password reset requests.';
+$string['privacy:metadata:alias'] = 'A phone alias linked to an existing Moodle user ID.';
+$string['privacy:metadata:resend'] = 'Recipient address and transactional email content are sent to Resend when it is the selected provider.';
+$string['signin_google'] = 'Sign in with Google';
+$string['or_text'] = 'Or';
+$string['signin_with'] = 'Sign in with {$a}';
+$string['oauthdiscoveryerror'] = 'OAuth identity providers could not be loaded: {$a}';
