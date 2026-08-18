@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_qlogin_shomokh';
-$plugin->version = 2026081808;
+$plugin->version = 2026081809;
 $plugin->requires = 2022112800;
 $plugin->maturity = MATURITY_BETA;
-$plugin->release = '0.6.8';
+$plugin->release = '0.6.9';
