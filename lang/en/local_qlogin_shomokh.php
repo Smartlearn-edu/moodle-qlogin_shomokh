@@ -121,7 +121,8 @@ $string['maxreminders_desc'] = 'Maximum automated email reminders for one verifi
 $string['resendcooldownsetting'] = 'Same-channel resend cooldown (seconds)';
 $string['resendcooldown_desc'] = 'Applied independently to email, WhatsApp verification, and recovery. It never blocks another channel.';
 $string['authtypes'] = 'Eligible authentication methods';
-$string['authtypes_desc'] = 'Comma-separated Moodle auth methods. Default: manual,email.';
+$string['authtypes_desc'] = 'Comma-separated Moodle auth methods. Default: manual,email. Add oauth2 only when OAuth users ' .
+    'must follow this plugin\'s phone and email verification policy; this also displays the configured OAuth providers.';
 $string['selfclaimenabled'] = 'Enable self-service linking for existing accounts';
 $string['selfclaimenabled_desc'] = 'Allows an authenticated existing user, or a user who proves the current password, to attach one unique mobile sign-in alias without changing the Moodle user ID. Unified phone verification must also be enabled.';
 $string['settings:whatsapp'] = 'WhatsApp and recovery';
@@ -385,3 +386,4 @@ $string['privacy:metadata:resend'] = 'Recipient address and transactional email 
 $string['signin_google'] = 'Sign in with Google';
 $string['or_text'] = 'Or';
 $string['signin_with'] = 'Sign in with {$a}';
+$string['oauthdiscoveryerror'] = 'OAuth identity providers could not be loaded: {$a}';

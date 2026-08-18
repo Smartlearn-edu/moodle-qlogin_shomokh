@@ -1,5 +1,5 @@
 # Production Readiness Guide & Master Test Plan
-## Plugin: `local_qlogin_shomokh` (v0.6.2)
+## Plugin: `local_qlogin_shomokh` (v0.7.1)
 
 ---
 
@@ -68,6 +68,8 @@ vendor/bin/phpunit --testsuite local_qlogin_shomokh_testsuite
 | **AUT-04** | Svix Webhook Signature | `mail_test.php` | Accepts valid Svix signatures; rejects tampered or expired payloads | [ ] |
 | **AUT-05** | Legacy Migration Logic | `migration_test.php` | Classifies unique vs duplicate numbers accurately | [ ] |
 | **AUT-06** | Admin Test Challenge | `whatsapp_test_test.php` | Generates 10-minute temporary challenges bound to admin session | [ ] |
+| **AUT-07** | OAuth policy opt-in | `verification_test.php` | OAuth users are excluded by default and included only when `oauth2` is configured | [ ] |
+| **AUT-08** | Two expired channels | `process_verifications_test.php` | Cron processes one deterministic reminder record without a non-unique lookup | [ ] |
 
 ---
 

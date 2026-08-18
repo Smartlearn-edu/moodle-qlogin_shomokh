@@ -57,14 +57,20 @@ final class process_verifications extends \core\task\scheduled_task {
             return;
         }
         \local_qlogin_shomokh\verification::expire_due();
-        $sql = "SELECT DISTINCT userid FROM {local_qlogin_shomokh_verify} WHERE state = :state";
+        // Reminders are generic per user, not per channel. Select one expired
+        // record deterministically so a user with both channels expired does
+        // not trigger a non-unique get_record() call or duplicate messages.
+        $sql = "SELECT MIN(id) AS id, userid
+                  FROM {local_qlogin_shomokh_verify}
+                 WHERE state = :state
+              GROUP BY userid";
         foreach ($DB->get_records_sql($sql, ['state' => \local_qlogin_shomokh\verification::EXPIRED]) as $row) {
             $userid = (int)$row->userid;
             if (\local_qlogin_shomokh\verification::requires_enforcement($userid)) {
                 \local_qlogin_shomokh\enforcement::reconcile($userid);
                 $record = $DB->get_record(
                     'local_qlogin_shomokh_verify',
-                    ['userid' => $userid, 'state' => \local_qlogin_shomokh\verification::EXPIRED]
+                    ['id' => (int)$row->id, 'state' => \local_qlogin_shomokh\verification::EXPIRED]
                 );
                 if ($record) {
                     \local_qlogin_shomokh\verification::remind($record);

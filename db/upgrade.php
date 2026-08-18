@@ -22,8 +22,6 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Upgrade local_qlogin_shomokh.
  *
@@ -398,6 +396,11 @@ function xmldb_local_qlogin_shomokh_upgrade(int $oldversion): bool {
         // No schema change. Keep the dropdown attached to the telephone picker,
         // matching the previously verified layout instead of a page container.
         upgrade_plugin_savepoint(true, 2026081801, 'local', 'qlogin_shomokh');
+    }
+    if ($oldversion < 2026081812) {
+        // No schema change. Use Moodle's OAuth provider discovery, make OAuth
+        // opt-in to verification policy, and process one reminder per user.
+        upgrade_plugin_savepoint(true, 2026081812, 'local', 'qlogin_shomokh');
     }
     return true;
 }

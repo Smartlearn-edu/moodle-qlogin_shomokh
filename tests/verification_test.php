@@ -37,6 +37,19 @@ final class verification_test extends \advanced_testcase {
         $this->assertTrue(auth_policy::allows((object)['auth' => 'email']));
     }
 
+    /**
+     * OAuth users are excluded until the administrator opts them into verification.
+     */
+    public function test_oauth_authentication_is_opt_in(): void {
+        $this->resetAfterTest();
+        set_config('authtypes', 'manual,email', 'local_qlogin_shomokh');
+
+        $this->assertFalse(auth_policy::allows((object)['auth' => 'oauth2']));
+
+        set_config('authtypes', 'manual,email,oauth2', 'local_qlogin_shomokh');
+        $this->assertTrue(auth_policy::allows((object)['auth' => 'oauth2']));
+    }
+
     public function test_email_auth_legacy_login_starts_verification_when_allowed(): void {
         $this->resetAfterTest();
         set_config('enabled', 0, 'local_qlogin_shomokh');

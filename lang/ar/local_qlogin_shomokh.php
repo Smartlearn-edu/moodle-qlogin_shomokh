@@ -119,7 +119,8 @@ $string['maxreminders_desc'] = 'الحد الأقصى للتذكيرات الب�
 $string['resendcooldownsetting'] = 'مهلة إعادة الإرسال للقناة نفسها بالثواني';
 $string['resendcooldown_desc'] = 'تطبق بصورة مستقلة على البريد وواتساب والاستعادة، ولا تمنع استخدام قناة أخرى.';
 $string['authtypes'] = 'طرق المصادقة المشمولة';
-$string['authtypes_desc'] = 'طرق Moodle مفصولة بفاصلة. الافتراضي: manual,email.';
+$string['authtypes_desc'] = 'طرق Moodle مفصولة بفاصلة. الافتراضي: manual,email. أضف oauth2 فقط عندما يلزم خضوع ' .
+    'مستخدمي OAuth لسياسة تحقق البريد والجوال في هذه الإضافة؛ وعندها تظهر أيضًا أزرار مزودي OAuth المضبوطين.';
 $string['selfclaimenabled'] = 'تفعيل الربط الذاتي للحسابات السابقة';
 $string['selfclaimenabled_desc'] = 'يسمح لصاحب الحساب السابق بعد تسجيل دخوله أو إثبات كلمة مروره بإضافة رقم جوال فريد للدخول، دون تغيير معرّف مستخدم Moodle. ويجب أن يكون التحقق الموحد من الجوال مفعّلًا أيضًا.';
 $string['settings:whatsapp'] = 'واتساب واستعادة كلمة المرور';
@@ -380,3 +381,4 @@ $string['privacy:metadata:resend'] = 'يُرسل عنوان المستلم وم�
 $string['signin_google'] = 'تسجيل الدخول عبر جوجل';
 $string['or_text'] = 'أو';
 $string['signin_with'] = 'تسجيل الدخول عبر {$a}';
+$string['oauthdiscoveryerror'] = 'تعذر تحميل مزودي هوية OAuth: {$a}';
